@@ -49,4 +49,16 @@ defmodule Uploadex do
   defp convert_result({:error, _, msg, _}), do: {:error, msg}
   defp convert_result({:ok, %{insert: record}}), do: {:ok, record}
   defp convert_result({:ok, %{update: record}}), do: {:ok, record}
+
+  def get_file_url(_uploader, _record, nil, _endpoint_url), do: nil
+
+  def get_file_url(uploader, record, file, endpoint_url) when is_binary(endpoint_url) do
+    {file, record}
+    |> uploader.url()
+    |> String.replace(uploader.base_directory(), endpoint_url)
+  end
+
+  def get_file_url(uploader, record, file, endpoint) when is_atom(endpoint) do
+    get_file_url(uploader, record, file, endpoint.url())
+  end
 end

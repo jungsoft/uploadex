@@ -9,6 +9,8 @@ defmodule Uploadex.Uploader do
   @callback get_files(record) :: file | [file]
   @callback do_get_files(record) :: [String.t()]
 
+  @callback base_directory() :: String.t()
+
   @callback repo :: any()
 
   @optional_callbacks repo: 0
