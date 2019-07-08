@@ -10,18 +10,16 @@ defmodule Uploadex.Definition do
 
       use Arc.Definition
 
-      def get_files(record), do: record.photo
       def repo, do: unquote(repo)
 
       @doc """
       Wraps the user defined `get_files` function to always return a list
       """
       def do_get_files(record) do
-        case get_files(record) do
-          nil -> []
-          files when is_list(files) -> Enum.reject(files, &is_nil/1)
-          file -> [file]
-        end
+        record
+        |> get_files()
+        |> List.wrap()
+        |> Enum.reject(&is_nil/1)
       end
 
       defoverridable Uploader
