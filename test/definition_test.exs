@@ -7,7 +7,7 @@ defmodule DefinitionTest do
       use Uploadex.Definition, repo: :test
 
       def get_files(any), do: any
-      def base_directory(), do: :test
+      def base_directory, do: :test
     end
 
     test "transforms an element into a list" do
