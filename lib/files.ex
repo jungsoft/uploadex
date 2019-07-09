@@ -1,6 +1,7 @@
 defmodule Uploadex.Files do
   @moduledoc """
-  Functions to store and delete files
+  Functions to store and delete files.
+  This is an abstraction on top of the `Arc.Actions.Store` and `Arc.Actions.Delete`, dealing with all files of a given record.
   """
 
   @doc """
@@ -12,6 +13,7 @@ defmodule Uploadex.Files do
     |> do_store_files(record, uploader)
   end
 
+  # Recursively stores all files, stopping if one operation fails.
   defp do_store_files([file | remaining_files], record, uploader) do
     case uploader.store({file, record}) do
       {:ok, _file} -> do_store_files(remaining_files, record, uploader)
@@ -44,10 +46,12 @@ defmodule Uploadex.Files do
     record
     |> uploader.do_get_files()
     |> do_delete_files(record, uploader)
+
+    {:ok, record}
   end
 
+  # Deletes all files, since uploader.delete always returns :ok, there is no extra logic for stopping when one operation fails.
   defp do_delete_files(files, record, uploader) when is_list(files) do
-    # Delete always returns :ok
     Enum.each(files, fn file ->
       :ok = uploader.delete({file, record})
     end)
