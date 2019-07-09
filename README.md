@@ -2,6 +2,8 @@
 
 Uploadex is an Elixir library for handling uploads using [Ecto](https://github.com/elixir-ecto/ecto) and [Arc](https://github.com/stavro/arc).
 
+Documentation can be found at https://hexdocs.pm/uploadex.
+
 ## Installation
 
 The package can be installed by adding `uploadex` to your list of dependencies in `mix.exs`:
@@ -55,7 +57,7 @@ defmodule MyApp.MyUploader do
 end
 ```
 
-In your schema, use the Ecto Type `Uploadex.Upload`:
+In your schema, use the Ecto Type [Uploadex.Upload](https://hexdocs.pm/uploadex/Uploadex.Upload.html):
 
 
 ```elixir
@@ -71,7 +73,7 @@ def create_changeset(%User{} = user, attrs) do
 end
 ```
 
-Now, you can use the `Uploadex` functions to handle your records with their files:
+Now, you can use the [Uploadex](https://hexdocs.pm/uploadex/Uploadex.html) functions to handle your records with their files:
 
 ```elixir
 defmodule MyApp.Accounts do
@@ -98,4 +100,4 @@ defmodule MyApp.Accounts do
 end
 ```
 
-For more flexibility, you can use the `Files` module directly.
+For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module directly.
