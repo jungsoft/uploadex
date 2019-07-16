@@ -5,20 +5,35 @@ defmodule Uploadex.Upload do
 
   @behaviour Ecto.Type
 
+  alias Uploadex.FileProcessing
+
   def type, do: :string
 
-  # Cast a Plug.Upload
   def cast(%{filename: filename, path: path}) do
     {:ok, %{
-      filename: "#{Ecto.UUID.generate()}-#{filename}",
+      filename: generate_filename(filename),
       path: path
     }}
   end
 
-  # Cast a file
+  def cast(%{filename: filename, binary: binary}) do
+    case FileProcessing.process_base64(binary) do
+      {:ok, binary} ->
+        {:ok, %{
+          filename: generate_filename(filename),
+          binary: binary
+        }}
+
+      error ->
+        error
+    end
+  end
+
   def cast(filename) when is_binary(filename), do: {:ok, filename}
 
   def cast(_), do: :error
+
+  defp generate_filename(filename), do: "#{Ecto.UUID.generate()}-#{filename}"
 
   def load(filename) when is_binary(filename), do: {:ok, filename}
   def load(_), do: :error
