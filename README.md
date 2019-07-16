@@ -11,7 +11,7 @@ The package can be installed by adding `uploadex` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:uploadex, "~> 0.0.1"}
+    {:uploadex, "~> 0.1.0"}
   ]
 end
 ```
@@ -59,7 +59,6 @@ end
 
 In your schema, use the Ecto Type [Uploadex.Upload](https://hexdocs.pm/uploadex/Uploadex.Upload.html):
 
-
 ```elixir
 schema "users" do
   field :name, :string
@@ -101,3 +100,11 @@ end
 ```
 
 For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module directly.
+
+## Motivation
+
+Even though there already exists a library to integrate Arc with Ecto (https://github.com/stavro/arc_ecto), this library was created because:
+
+* arc_ecto does not support upload of binary files
+* Uploadex makes it easier to deal with records that contain files without having to manage those files manually on every operation
+* Using uploadex, the changeset operations have no side-effects and special casting is needed
