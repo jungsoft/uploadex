@@ -7,10 +7,14 @@ defmodule Uploadex.Files do
   @doc """
   Stores all files of a record, as defined by the uploader.
   Used in insert functions.
+
+  Since uploader.store only accepts maps, files that are not in that format are ignored.
+  This allows for assigning an existing file to a record without recreating it, by simply passing it's filename.
   """
   def store_files(record, uploader) do
     record
     |> uploader.do_get_files()
+    |> Enum.filter(&is_map/1)
     |> do_store_files(record, uploader)
   end
 
