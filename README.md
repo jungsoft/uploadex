@@ -99,7 +99,7 @@ defmodule MyApp.Accounts do
 end
 ```
 
-For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module directly.
+For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module (or even [arc functions](https://github.com/stavro/arc#basics)) directly.
 
 ## Motivation
 
@@ -107,4 +107,4 @@ Even though there already exists a library to integrate Arc with Ecto (https://g
 
 * arc_ecto does not support upload of binary files
 * Uploadex makes it easier to deal with records that contain files without having to manage those files manually on every operation
-* Using uploadex, the changeset operations have no side-effects and special casting is needed
+* Using uploadex, the changeset operations have no side-effects and no special casting is needed
