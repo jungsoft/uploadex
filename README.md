@@ -99,7 +99,7 @@ defmodule MyApp.Accounts do
 end
 ```
 
-For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module (or even [arc functions](https://github.com/stavro/arc#basics)) directly.
+For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module (or even the [arc functions](https://github.com/stavro/arc#basics)) directly.
 
 ## Motivation
 
