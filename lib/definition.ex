@@ -62,11 +62,31 @@ defmodule Uploadex.Definition do
       def url(file), do: url(file, nil)
       def url(file, options) when is_list(options), do: url(file, nil, options)
       def url(file, version), do: url(file, version, [])
-      def url(file, version, options), do: Path.join(storage_dir(version, file), filename(version, file))
+      def url(file_and_scope, version, _options) do
+        filename = resolve_file_name(version, file_and_scope)
+        Path.join(storage_dir(version, file_and_scope), filename)
+      end
 
-      def filename(_version, {%{file_name: file_name}, _record}), do: Path.basename(file_name)
-      def filename(_version, {%{filename: filename}, _record}), do: Path.basename(filename)
-      def filename(_version, {filename, _record}) when is_binary(filename), do: Path.basename(filename)
+      def filename(_version, {%{file_name: file_name}, _record}), do: Path.basename(file_name, Path.extname(file_name))
+      def filename(_version, {%{filename: filename}, _record}), do: Path.basename(filename, Path.extname(filename))
+      def filename(_version, {filename, _record}) when is_binary(filename), do: Path.basename(filename, Path.extname(filename))
+
+      def extension(_version, {%{file_name: file_name}, _record}), do: Path.extname(file_name)
+      def extension(_version, {%{filename: filename}, _record}), do: Path.extname(filename)
+      def extension(_version, {filename, _record}) when is_binary(filename), do: Path.extname(filename)
+
+      # Using this as a fixed version of Arc.Definition.Versioning.resolve_file_name
+      def resolve_file_name(version, {file, scope}) do
+        filename = filename(version, {file, scope})
+        extension = extension(version, {file, scope})
+        conversion = transform(version, {file, scope})
+
+        case conversion do
+          :skip       -> nil
+          {_, _, ext} -> "#{filename}.#{ext}"
+          _          -> "#{filename}#{extension}"
+        end
+      end
 
       defoverridable Uploader
     end
