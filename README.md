@@ -48,11 +48,11 @@ defmodule MyApp.MyUploader do
   ## We can also define the functions for Arc.Definition here
 
   def storage_dir(_version, {_file, %User{id: user_id}}) do
-    Path.join(base_directory(), "/uploads/users/\#{user_id}")
+    Path.join(base_directory(), "/uploads/users/#{user_id}")
   end
 
   def storage_dir(_version, {_file, %Company{id: id}}) do
-    Path.join(base_directory(), "/uploads/companies/\#{id}")
+    Path.join(base_directory(), "/uploads/companies/#{id}")
   end
 end
 ```
