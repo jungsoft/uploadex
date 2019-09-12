@@ -26,7 +26,7 @@ defmodule Uploadex do
 
   This function also deletes files that are no longer referenced.
   """
-  def update_with_file_delete_previous(changeset, previous_record, uploader, opts \\ []) do
+  def update_with_file(changeset, previous_record, uploader, opts \\ []) do
     repo = uploader.repo
 
     Multi.new()
@@ -40,7 +40,7 @@ defmodule Uploadex do
   @doc """
   Similar to `update_with_file/3`, but does not delete previous files.
   """
-  def update_with_file(changeset, uploader, opts \\ []) do
+  def update_with_file_keep_previous(changeset, uploader, opts \\ []) do
     repo = uploader.repo
 
     Multi.new()
