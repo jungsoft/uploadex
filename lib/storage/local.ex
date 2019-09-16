@@ -3,7 +3,7 @@ defmodule Uploadex.Storage.Local do
   Local storage.
   Use this module instead of arc's to have the same pattern between upload and fetch.
 
-  The problem is that to upload, arc expects a mao with the key :filename, but when fetching it expects a :file_name,
+  The problem is that to upload, arc expects a map with the key :filename, but when fetching it expects a :file_name,
   so you can't store a record with an upload and then take the result to get the file.
   """
 
