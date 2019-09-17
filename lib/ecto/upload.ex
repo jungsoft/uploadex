@@ -1,6 +1,8 @@
 defmodule Uploadex.Upload do
   @moduledoc """
-  Ecto type that handles upload
+  Ecto type that handles upload.
+
+  It stores the filename in the database.
   """
 
   @behaviour Ecto.Type

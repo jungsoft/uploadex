@@ -7,11 +7,6 @@ defmodule Uploadex.Uploader do
   @type file :: map() | String.t()
 
   @callback get_files(record) :: file | [file]
-  @callback do_get_files(record) :: [String.t()]
-
-  @callback base_directory() :: String.t()
-
-  @callback repo :: any()
-
-  @optional_callbacks repo: 0
+  @callback default_opts(module :: atom()) :: opts :: Keyword.t()
+  @callback storage(record) :: {module :: atom(), opts :: Keyword.t()}
 end
