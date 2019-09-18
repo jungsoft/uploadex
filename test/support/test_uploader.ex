@@ -1,4 +1,5 @@
 defmodule TestUploader do
+  @moduledoc false
   @behaviour Uploadex.Uploader
 
   @impl true

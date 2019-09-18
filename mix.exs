@@ -38,7 +38,15 @@ defmodule Uploadex.MixProject do
 
   defp deps do
     [
+      # Ecto
       {:ecto, "~> 3.1.7"},
+      # For AWS
+      {:ex_aws, "~> 2.0", optional: true},
+      {:ex_aws_s3, "~> 2.0", optional: true},
+      {:poison, ">= 3.0.0", optional: true},
+      {:hackney, ">= 1.9.0", optional: true},
+      {:sweet_xml, "~> 0.6", optional: true},
+      # Runtime checks and doc
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
     ]

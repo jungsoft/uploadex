@@ -8,7 +8,6 @@ defmodule Uploadex.FileStorage do
     base_url: string! for get_url
   """
 
-
   @behaviour Uploadex.Storage
 
   @impl true
