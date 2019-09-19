@@ -1,6 +1,26 @@
 defmodule Uploadex.Resolver do
   @moduledoc """
   Resolver functions to make it easier to use Uploadex with Absinthe.
+
+  ## Example
+
+    In your Absinthe schema, assuming user only has one photo:
+
+      object :user do
+        field :photo_url, :string, resolve: &Uploadex.Resolver.get_file_url/3
+      end
+
+    If it has many photos:
+
+      object :user do
+        field :photos, list_of(:string), resolve: &Uploadex.Resolver.get_files_url/3
+      end
+
+    If an object has many files but the field is for a specific one:
+
+      object :company do
+        field :logo_url, :string, resolve: fn company, _, _ -> Resolver.get_file_url(company, company.logo) end
+      end
   """
 
   alias Uploadex.Files

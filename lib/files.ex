@@ -1,7 +1,6 @@
 defmodule Uploadex.Files do
   @moduledoc """
   Functions to store and delete files.
-  This is an abstraction on top of the [Arc.Actions.Store](https://github.com/stavro/arc/blob/master/lib/arc/actions/store.ex) and [Arc.Actions.Delete](https://github.com/stavro/arc/blob/master/lib/arc/actions/delete.ex), dealing with all files of a given record.
   """
 
   @type record :: any()
@@ -10,10 +9,8 @@ defmodule Uploadex.Files do
 
   @doc """
   Stores all files of a record, as defined by the uploader.
-  Used in insert functions.
 
-  Since uploader.store only accepts maps, files that are not in that format are ignored.
-  This allows for assigning an existing file to a record without recreating it, by simply passing it's filename.
+  Files that are not maps are ignored, which allows for assigning an existing file to a record without recreating it, by simply passing it's filename.
   """
   @spec store_files(record) :: {:ok, record} | {:error, any()}
   def store_files(record) do
@@ -39,7 +36,6 @@ defmodule Uploadex.Files do
 
   @doc """
   Deletes all files that changed.
-  Used in update functions.
   """
   @spec delete_previous_files(record, record) :: {:ok, record} | {:error, any()}
   def delete_previous_files(new_record, previous_record) do
@@ -55,7 +51,6 @@ defmodule Uploadex.Files do
 
   @doc """
   Deletes all files for a record.
-  Used in delete functions.
   """
   @spec delete_files(record) :: {:ok, record} | {:error, any()}
   def delete_files(record) do

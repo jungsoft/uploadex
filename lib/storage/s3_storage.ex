@@ -1,12 +1,21 @@
 defmodule Uploadex.S3Storage do
   @moduledoc """
-  File storage.
+  Storage for AWS S3.
 
-  opts:
-    bucket: string!
-    directory: string!
-    upload_opts: keyword list
-    base_url: string! for get_url
+  ## Opts
+
+  * `bucket`: String (required for `c:Uploadex.Storage.store/2` and `c:Uploadex.Storage.delete/2`)
+  * `directory`: String (required for all functions)
+  * `upload_opts`: Keyword list. This opts are passed to `ExAws.S3.upload/4` and `ExAws.S3.put_object/4` (required for `c:Uploadex.Storage.store/2`)
+  * `base_url`:  String (required for `c:Uploadex.Storage.get_url/2`)
+
+  ## Example
+
+    To use this storage for your `User` record, define these functions in your `Uploadex.Uploader` implementation:
+
+      def default_opts(Uploadex.S3Storage), do: [bucket: "my_bucket", base_url: "https://my_bucket.s3-sa-east-1.amazonaws.com", upload_opts: [acl: :public_read]]
+
+      def storage(%User{} = user), do: {Uploadex.S3Storage, directory: "/photos"}
   """
 
   @behaviour Uploadex.Storage

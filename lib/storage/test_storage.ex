@@ -1,6 +1,8 @@
 defmodule Uploadex.TestStorage do
   @moduledoc """
-  Test storage.
+  Storage for tests.
+
+  See files_test.exs for examples on how to use this.
   """
 
   use Agent
