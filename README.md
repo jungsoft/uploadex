@@ -1,6 +1,6 @@
 # Uploadex
 
-Uploadex is an Elixir library for handling uploads that integrates well with [Ecto](https://github.com/elixir-ecto/ecto), [Phoenix](https://github.com/phoenixframework/phoenixc) and [Absinthe](https://github.com/absinthe-graphql/absinthe).
+Uploadex is an Elixir library for handling uploads that integrates well with [Ecto](https://github.com/elixir-ecto/ecto), [Phoenix](https://github.com/phoenixframework/phoenix) and [Absinthe](https://github.com/absinthe-graphql/absinthe).
 
 Documentation can be found at https://hexdocs.pm/uploadex.
 
@@ -30,7 +30,7 @@ config :uploadex,
   repo: MyApp.Repo
 ```
 
-Note that the `Repo` is only necessary if using [Uploadex](https://hexdocs.pm/uploadex/doc/Uploadex.html#content) context helper functions.
+Note that the `Repo` is only necessary if using [Uploadex](https://hexdocs.pm/uploadex/Uploadex.html) context helper functions.
 
 ### 2: Uploader
 
@@ -62,11 +62,11 @@ defmodule MyApp.Uploader do
 end
 ```
 
-This example shows the configuration for the [Uploadex.FileStorage](https://hexdocs.pm/uploadex/doc/Uploadex.FileStorage.html#content) and [Uploadex.S3Storage](https://hexdocs.pm/uploadex/doc/Uploadex.S3Storage.html#content) implementations, but you are free to implement your own [Storage](https://hexdocs.pm/uploadex/doc/Uploadex.Storage.html#content).
+This example shows the configuration for the [Uploadex.FileStorage](https://hexdocs.pm/uploadex/Uploadex.FileStorage.html#content) and [Uploadex.S3Storage](https://hexdocs.pm/uploadex/Uploadex.S3Storage.html#content) implementations, but you are free to implement your own [Storage](https://hexdocs.pm/uploadex/Uploadex.Storage.html#content).
 
 ### 3: Schema
 
-In your schema, use the Ecto Type [Uploadex.Upload](https://hexdocs.pm/uploadex/Uploadex.Upload.html):
+In your schema, use the Ecto Type [Uploadex.Upload](https://hexdocs.pm/uploadex/Uploadex.Upload.html#content):
 
 ```elixir
 schema "users" do
@@ -83,7 +83,7 @@ end
 
 ### 4: Enjoy!
 
-Now, you can use the [Uploadex](https://hexdocs.pm/uploadex/Uploadex.html) functions to handle your records with their files:
+Now, you can use the [Uploadex](https://hexdocs.pm/uploadex/Uploadex.html#content) functions to handle your records with their files:
 
 ```elixir
 defmodule MyApp.Accounts do
