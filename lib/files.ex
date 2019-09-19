@@ -4,19 +4,9 @@ defmodule Uploadex.Files do
   This is an abstraction on top of the [Arc.Actions.Store](https://github.com/stavro/arc/blob/master/lib/arc/actions/store.ex) and [Arc.Actions.Delete](https://github.com/stavro/arc/blob/master/lib/arc/actions/delete.ex), dealing with all files of a given record.
   """
 
+  @type record :: any()
+
   defp uploader!, do: Application.fetch_env!(:uploadex, :uploader)
-
-  @doc """
-  Wraps the user defined `get_files` function to always return a list
-  """
-  def wrap_files(record) do
-    uploader = uploader!()
-
-    record
-    |> uploader.get_files()
-    |> List.wrap()
-    |> Enum.reject(&is_nil/1)
-  end
 
   @doc """
   Stores all files of a record, as defined by the uploader.
@@ -25,6 +15,7 @@ defmodule Uploadex.Files do
   Since uploader.store only accepts maps, files that are not in that format are ignored.
   This allows for assigning an existing file to a record without recreating it, by simply passing it's filename.
   """
+  @spec store_files(record) :: {:ok, record} | {:error, any()}
   def store_files(record) do
     storage_opts = get_storage_opts(record)
 
@@ -50,6 +41,7 @@ defmodule Uploadex.Files do
   Deletes all files that changed.
   Used in update functions.
   """
+  @spec delete_previous_files(record, record) :: {:ok, record} | {:error, any()}
   def delete_previous_files(new_record, previous_record) do
     storage_opts = get_storage_opts(new_record)
 
@@ -65,6 +57,7 @@ defmodule Uploadex.Files do
   Deletes all files for a record.
   Used in delete functions.
   """
+  @spec delete_files(record) :: {:ok, record} | {:error, any()}
   def delete_files(record) do
     storage_opts = get_storage_opts(record)
 
@@ -89,6 +82,7 @@ defmodule Uploadex.Files do
     old_files -- new_files
   end
 
+  @spec get_file_url(record) :: String.t() | nil | {:error, String.t()}
   def get_file_url(record) do
     record
     |> get_files_url()
@@ -99,16 +93,19 @@ defmodule Uploadex.Files do
     end
   end
 
+  @spec get_file_url(record, String.t()) :: String.t() | nil | {:error, String.t()}
   def get_file_url(record, file) do
     record
     |> get_files_url(file)
     |> List.first()
   end
 
+  @spec get_files_url(record) :: [String.t()]
   def get_files_url(record) do
     get_files_url(record, wrap_files(record))
   end
 
+  @spec get_files_url(record, String.t() | [String.t()]) :: [String.t()]
   def get_files_url(record, files) do
     {storage, opts} = get_storage_opts(record)
 
@@ -123,5 +120,15 @@ defmodule Uploadex.Files do
     default_opts = uploader!().default_opts(storage)
 
     {storage, Keyword.merge(default_opts, opts)}
+  end
+
+  # Wraps the user defined `get_files` function to always return a list
+  defp wrap_files(record) do
+    uploader = uploader!()
+
+    record
+    |> uploader.get_files()
+    |> List.wrap()
+    |> Enum.reject(&is_nil/1)
   end
 end

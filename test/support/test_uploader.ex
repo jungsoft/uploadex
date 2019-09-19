@@ -8,7 +8,7 @@ defmodule TestUploader do
   end
 
   @impl true
-  def default_opts(Uploadex.TestStorage), do: []
+  def default_opts(Uploadex.TestStorage), do: [a: 1, b: 2]
 
   @impl true
   def storage(%User{}) do
