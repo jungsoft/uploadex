@@ -112,7 +112,7 @@ For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Upload
 
 ## Motivation
 
-Even though there already exists a library to for uploading files that integrates with ecto (https://github.com/stavro/arc_ecto), this library was created because:
+Even though there already exists a library for uploading files that integrates with ecto (https://github.com/stavro/arc_ecto), this library was created because:
 
 * arc_ecto does not support upload of binary files
 * Uploadex makes it easier to deal with records that contain files without having to manage those files manually on every operation

@@ -19,7 +19,7 @@ defmodule Uploadex.Resolver do
     If an object has many files but the field is for a specific one:
 
       object :company do
-        field :logo_url, :string, resolve: fn company, _, _ -> Resolver.get_file_url(company, company.logo) end
+        field :logo_url, :string, resolve: fn company, _, _ -> Uploadex.Resolver.get_file_url(company, company.logo) end
       end
   """
 

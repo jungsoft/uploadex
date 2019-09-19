@@ -1,6 +1,6 @@
 defmodule Uploadex.FileStorage do
   @moduledoc """
-  Storage for AWS S3.
+  Storage for Local Files.
 
   ## Opts
 
