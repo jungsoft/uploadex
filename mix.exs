@@ -4,7 +4,7 @@ defmodule Uploadex.MixProject do
   def project do
     [
       app: :uploadex,
-      version: "0.1.2",
+      version: "1.0.0",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -39,7 +39,7 @@ defmodule Uploadex.MixProject do
   defp deps do
     [
       # Ecto
-      {:ecto, "~> 3.1.7"},
+      {:ecto, ">= 3.1.7"},
       # For AWS
       {:ex_aws, "~> 2.0", optional: true},
       {:ex_aws_s3, "~> 2.0", optional: true},

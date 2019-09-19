@@ -18,17 +18,19 @@ end
 
 ## Usage
 
-This library relies heavily on pattern matching for configuration, so the first step is to define your Uploader configuration module. In your `config.exs`:
+Follow these steps to use Uploadex:
 
 ### 1: Config
 
-Note that the `Repo` is only necessary if using [Uploadex](https://hexdocs.pm/uploadex/doc/Uploadex.html#content) context helper functions.
+This library relies heavily on pattern matching for configuration, so the first step is to define your Uploader configuration module. In your `config.exs`:
 
 ```elixir
 config :uploadex,
   uploader: MyApp.PhotoUploader,
   repo: MyApp.Repo
 ```
+
+Note that the `Repo` is only necessary if using [Uploadex](https://hexdocs.pm/uploadex/doc/Uploadex.html#content) context helper functions.
 
 ### 2: Uploader
 
