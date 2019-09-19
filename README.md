@@ -1,6 +1,6 @@
 # Uploadex
 
-Uploadex is an Elixir library for handling uploads using [Ecto](https://github.com/elixir-ecto/ecto) and [Arc](https://github.com/stavro/arc).
+Uploadex is an Elixir library for handling uploads that integrates well with [Ecto](https://github.com/elixir-ecto/ecto), [Phoenix](https://github.com/phoenixframework/phoenixc) and [Absinthe](https://github.com/absinthe-graphql/absinthe).
 
 Documentation can be found at https://hexdocs.pm/uploadex.
 
@@ -11,51 +11,58 @@ The package can be installed by adding `uploadex` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:uploadex, "~> 0.1.2"}
+    {:uploadex, "~> 1.0.0"}
   ]
 end
 ```
 
 ## Usage
 
-This library is built on top of [Arc](https://github.com/stavro/arc), so you can configure it normally.
-To use the default configuration, storing to the disk, no configuration is needed.
+This library relies heavily on pattern matching for configuration, so the first step is to define your Uploader configuration module. In your `config.exs`:
+
+### 1: Config
+
+Note that the `Repo` is only necessary if using [Uploadex](https://hexdocs.pm/uploadex/doc/Uploadex.html#content) context helper functions.
+
+```elixir
+config :uploadex,
+  uploader: MyApp.PhotoUploader,
+  repo: MyApp.Repo
+```
+
+### 2: Uploader
 
 Then, define your uploader:
 
 ```elixir
-defmodule MyApp.MyUploader do
-  use Uploadex.Definition,
-    repo: MyApp.Repo
+defmodule MyApp.Uploader do
+  @moduledoc false
+  @behaviour Uploadex.Uploader
 
-  ## Functions required for Uploadex.Definition
+  alias MyAppWeb.Endpoint
 
-  def base_directory do
-    Path.join(:code.priv_dir(:my_app), "static/")
-  end
+  @impl true
+  def get_files(%User{photo: photo}), do: photo
+  def get_files(%Company{photo: photo}), do: photo
 
-  def get_files(%MyApp.User{photo: photo}), do: photo
+  @impl true
+  def default_opts(Uploadex.FileStorage), do: [base_path: base_directory(), base_url: Endpoint.url()]
+  def default_opts(Uploadex.S3Storage), do: [bucket: "my_bucket", base_url: "https://my_bucket.s3-sa-east-1.amazonaws.com", upload_opts: [acl: :public_read]]
 
-  # For this example, we assume company has_many :photos, and each photo has a file field.
-  # For this to work properly, we will need cast_assoc :photos when inserting/updating a company.
-  def get_files(%MyApp.Company{} = company) do
-    company
-    |> MyApp.Repo.preload(:photos)
-    |> Map.get(:photos)
-    |> Enum.map(& &1.file)
-  end
+  @impl true
+  def storage(%User{} = user), do: {Uploadex.FileStorage, directory: storage_dir(user)}
+  def storage(%Company{} = company), do: {Uploadex.S3Storage, directory: storage_dir(company)}
 
-  ## We can also define the functions for Arc.Definition here
+  def base_directory, do: :code.priv_dir(:alltleta)
 
-  def storage_dir(_version, {_file, %User{id: user_id}}) do
-    Path.join(base_directory(), "/uploads/users/#{user_id}")
-  end
-
-  def storage_dir(_version, {_file, %Company{id: id}}) do
-    Path.join(base_directory(), "/uploads/companies/#{id}")
-  end
+  def storage_dir(%User{id: user_id}), do: "/uploads/users/#{user_id}"
+  def storage_dir(%Company{}), do: "/thumbnails"
 end
 ```
+
+This example shows the configuration for the [Uploadex.FileStorage](https://hexdocs.pm/uploadex/doc/Uploadex.FileStorage.html#content) and [Uploadex.S3Storage](https://hexdocs.pm/uploadex/doc/Uploadex.S3Storage.html#content) implementations, but you are free to implement your own [Storage](https://hexdocs.pm/uploadex/doc/Uploadex.Storage.html#content).
+
+### 3: Schema
 
 In your schema, use the Ecto Type [Uploadex.Upload](https://hexdocs.pm/uploadex/Uploadex.Upload.html):
 
@@ -72,6 +79,8 @@ def create_changeset(%User{} = user, attrs) do
 end
 ```
 
+### 4: Enjoy!
+
 Now, you can use the [Uploadex](https://hexdocs.pm/uploadex/Uploadex.html) functions to handle your records with their files:
 
 ```elixir
@@ -82,28 +91,28 @@ defmodule MyApp.Accounts do
   def create_user(attrs) do
     %User{}
     |> User.create_changeset(attrs)
-    |> Uploadex.create_with_file(MyUploader)
+    |> Uploadex.create_with_file()
   end
 
   def update_user(%User{} = user, attrs) do
     user
     |> User.update_changeset(attrs)
-    |> Uploadex.update_with_file(user, MyUploader)
+    |> Uploadex.update_with_file(user)
   end
 
   def delete_user(%User{} = user) do
     user
     |> Ecto.Changeset.change()
-    |> Uploadex.delete_with_file(MyUploader)
+    |> Uploadex.delete_with_file()
   end
 end
 ```
 
-For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module (or even the [arc functions](https://github.com/stavro/arc#basics)) directly.
+For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module directly.
 
 ## Motivation
 
-Even though there already exists a library to integrate Arc with Ecto (https://github.com/stavro/arc_ecto), this library was created because:
+Even though there already exists a library for uploading files that integrates with ecto (https://github.com/stavro/arc_ecto), this library was created because:
 
 * arc_ecto does not support upload of binary files
 * Uploadex makes it easier to deal with records that contain files without having to manage those files manually on every operation
