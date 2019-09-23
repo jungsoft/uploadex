@@ -15,18 +15,18 @@ defmodule Uploadex.Upload do
   def type, do: :string
 
   @spec cast(upload_path | upload_binary) :: {:ok, upload_path} | {:ok, upload_binary} | :error | {:error, keyword()}
-  def cast(%{filename: filename, path: path}) do
+  def cast(%{filename: _filename, path: path}) do
     {:ok, %{
-      filename: generate_filename(filename),
+      filename: generate_filename(),
       path: path
     }}
   end
 
-  def cast(%{filename: filename, binary: binary}) do
+  def cast(%{filename: _filename, binary: binary}) do
     case FileProcessing.process_binary(binary) do
       {:ok, binary} ->
         {:ok, %{
-          filename: generate_filename(filename),
+          filename: generate_filename(),
           binary: binary
         }}
 
@@ -39,7 +39,7 @@ defmodule Uploadex.Upload do
 
   def cast(_), do: :error
 
-  defp generate_filename(filename), do: "#{Ecto.UUID.generate()}-#{filename}"
+  defp generate_filename, do: Ecto.UUID.generate()
 
   @spec load(any) :: :error | {:ok, binary}
   def load(filename) when is_binary(filename), do: {:ok, filename}
