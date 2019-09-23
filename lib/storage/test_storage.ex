@@ -34,7 +34,6 @@ defmodule Uploadex.TestStorage do
   end
 
   @impl true
-  def get_url(%{filename: filename}, _opts \\ []) do
-    filename
-  end
+  def get_url(%{filename: filename}, _opts), do: filename
+  def get_url(filename, _opts) when is_binary(filename), do: filename
 end
