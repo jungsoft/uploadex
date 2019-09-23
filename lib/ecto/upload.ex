@@ -23,7 +23,7 @@ defmodule Uploadex.Upload do
   end
 
   def cast(%{filename: filename, binary: binary}) do
-    case FileProcessing.process_base64(binary) do
+    case FileProcessing.process_binary(binary) do
       {:ok, binary} ->
         {:ok, %{
           filename: generate_filename(filename),

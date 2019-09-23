@@ -4,13 +4,13 @@ defmodule Uploadex.FileProcessing do
   """
 
   @doc """
-  This function currently only supports binaries in base 64 because it's not clear what are the other use cases for this.
+  If it's in base64, decode it. Otherwise, do not try to process the file.
   """
-  @spec process_base64(String.t()) :: {:ok, binary()} | :error | {:error, keyword()}
-  def process_base64(image_binary) do
+  @spec process_binary(String.t()) :: {:ok, binary()} | :error | {:error, keyword()}
+  def process_binary(image_binary) do
     case String.split(image_binary, ";base64,") do
       [_metadata, base64] -> Base.decode64(base64)
-      _ -> {:error, [encoding: "Only images in Base 64 are supported."]}
+      _ -> {:ok, image_binary}
     end
   end
 end
