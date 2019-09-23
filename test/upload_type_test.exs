@@ -11,7 +11,6 @@ defmodule UploadTypeTest do
 
       assert upload.path == path
       refute upload.filename == filename
-      assert String.contains?(filename, upload.filename)
     end
 
     test "for base64 binary" do
@@ -19,9 +18,17 @@ defmodule UploadTypeTest do
       upload = %{filename: "filename.jpg", binary: binary_example}
       assert {:ok, %{filename: filename, binary: binary}} = Upload.cast(upload)
 
-      assert  Base.decode64!("/9j/4AAQSkZJRgABAQAAAQAB") === binary
+      assert Base.decode64!("/9j/4AAQSkZJRgABAQAAAQAB") === binary
       refute upload.filename == filename
-      assert String.contains?(filename, upload.filename)
+    end
+
+    test "for already processed binary" do
+      processed_binary = Base.decode64!("/9j/4AAQSkZJRgABAQAAAQAB")
+      upload = %{filename: "filename.jpg", binary: processed_binary}
+      assert {:ok, %{filename: filename, binary: binary}} = Upload.cast(upload)
+
+      assert processed_binary == binary
+      refute upload.filename == filename
     end
 
     test "for string" do
