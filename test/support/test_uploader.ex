@@ -14,4 +14,7 @@ defmodule TestUploader do
   def storage(%User{}) do
     {Uploadex.TestStorage, [directory: "test/dir"]}
   end
+
+  @impl true
+  def accepted_extensions(%User{}), do: ~w(.jpg .png)
 end

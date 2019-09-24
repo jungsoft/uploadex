@@ -5,6 +5,8 @@ defmodule Uploadex.Files do
 
   @type record :: any()
 
+  alias Uploadex.Validation
+
   defp uploader!, do: Application.fetch_env!(:uploadex, :uploader)
 
   @doc """
@@ -15,11 +17,18 @@ defmodule Uploadex.Files do
   @spec store_files(record) :: {:ok, record} | {:error, any()}
   def store_files(record) do
     storage_opts = get_storage_opts(record)
+    files = wrap_files(record)
+    extensions = get_accepted_extensions(record)
 
-    record
-    |> wrap_files()
-    |> Enum.filter(&is_map/1)
-    |> do_store_files(record, storage_opts)
+    case Validation.validate_extensions(files, extensions) do
+      :ok ->
+        files
+        |> Enum.filter(&is_map/1)
+        |> do_store_files(record, storage_opts)
+
+      error ->
+        error
+    end
   end
 
   # Recursively stores all files, stopping if one operation fails.
@@ -125,5 +134,12 @@ defmodule Uploadex.Files do
     |> uploader.get_files()
     |> List.wrap()
     |> Enum.reject(&is_nil/1)
+  end
+
+  defp get_accepted_extensions(record) do
+    case function_exported?(uploader!(), :accepted_extensions, 1) do
+      true -> uploader!().accepted_extensions(record)
+      false -> :any
+    end
   end
 end

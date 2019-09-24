@@ -10,7 +10,7 @@ defmodule S3StorageTest do
       assert S3Storage.get_url(%{filename: "filename.jpg"}, @opts) == S3Storage.get_url("filename.jpg", @opts)
     end
 
-    test "build the URL correctly" do
+    test "builds the URL correctly" do
       assert "https://my-bucket.s3-sa-east-1.amazonaws.com/thumbnails/filename.jpg" == S3Storage.get_url("filename.jpg", @opts)
     end
   end
