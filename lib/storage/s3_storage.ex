@@ -4,16 +4,16 @@ defmodule Uploadex.S3Storage do
 
   ## Opts
 
-  * `bucket`: String (required for `c:Uploadex.Storage.store/2` and `c:Uploadex.Storage.delete/2`)
+  * `bucket`: String (required for all functions)
+  * `region`:  String (required for `c:Uploadex.Storage.get_url/2`)
   * `directory`: String (required for all functions)
   * `upload_opts`: Keyword list. This opts are passed to `ExAws.S3.upload/4` and `ExAws.S3.put_object/4` (required for `c:Uploadex.Storage.store/2`)
-  * `base_url`:  String (required for `c:Uploadex.Storage.get_url/2`)
 
   ## Example
 
     To use this storage for your `User` record, define these functions in your `Uploadex.Uploader` implementation:
 
-      def default_opts(Uploadex.S3Storage), do: [bucket: "my_bucket", base_url: "https://my_bucket.s3-sa-east-1.amazonaws.com", upload_opts: [acl: :public_read]]
+      def default_opts(Uploadex.S3Storage), do: [bucket: "my_bucket", region: "sa-east-1", upload_opts: [acl: :public_read]]
 
       def storage(%User{} = user), do: {Uploadex.S3Storage, directory: "/photos"}
   """
@@ -61,8 +61,11 @@ defmodule Uploadex.S3Storage do
   @impl true
   def get_url(%{filename: filename}, opts), do: get_url(filename, opts)
   def get_url(filename, opts) when is_binary(filename) do
-    base_url = Keyword.fetch!(opts, :base_url)
+    bucket = Keyword.fetch!(opts, :bucket)
+    region = Keyword.fetch!(opts, :region)
     directory = Keyword.fetch!(opts, :directory)
+
+    base_url = "https://#{bucket}.s3-#{region}.amazonaws.com"
 
     base_url
     |> Path.join(directory)

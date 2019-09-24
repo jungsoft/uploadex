@@ -17,7 +17,7 @@ defmodule Uploadex.Uploader do
 
         @impl true
         def default_opts(Uploadex.FileStorage), do: [base_path: :code.priv_dir(:my_app), base_url: Endpoint.url()]
-        def default_opts(Uploadex.S3Storage), do: [bucket: "my_bucket", base_url: "https://my_bucket.s3-sa-east-1.amazonaws.com", upload_opts: [acl: :public_read]]
+        def default_opts(Uploadex.S3Storage), do: [bucket: "my_bucket", region: base_url: "sa-east-1", upload_opts: [acl: :public_read]]
 
         @impl true
         def storage(%User{} = user), do: {Uploadex.FileStorage, directory: storage_dir(user)}
