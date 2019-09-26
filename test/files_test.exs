@@ -18,6 +18,11 @@ defmodule UploadexTest do
       assert {:ok, %{}} = Files.store_files(user)
       assert user.files == Uploadex.TestStorage.get_stored()
     end
+
+    test "fails when extension is not accepted" do
+      user = %User{files: [%{filename: "file.pdf"}]}
+      assert {:error, "Some files in [\"file.pdf\"] violate the accepted extensions: [\".jpg\", \".png\"]"} = Files.store_files(user)
+    end
   end
 
   describe "delete_files/1" do
@@ -35,8 +40,8 @@ defmodule UploadexTest do
     end
 
     test "with changed files" do
-      assert {:ok, %{}} = Files.delete_previous_files(%User{files: [%{filename: "2"}]}, %User{})
-      assert [%{filename: "1"}] == TestStorage.get_deleted()
+      assert {:ok, %{}} = Files.delete_previous_files(%User{files: [%{filename: "2.jpg"}]}, %User{})
+      assert [%{filename: "1.jpg"}] == TestStorage.get_deleted()
     end
   end
 
@@ -74,7 +79,7 @@ defmodule UploadexTest do
 
   describe "Storage opts" do
     test "is passed to the storage considering default opts" do
-      user = %User{files: [%{filename: "file"}]}
+      user = %User{files: [%{filename: "file.png"}]}
       default_opts = TestUploader.default_opts(TestStorage)
       {TestStorage, custom_opts} = TestUploader.storage(user)
 
