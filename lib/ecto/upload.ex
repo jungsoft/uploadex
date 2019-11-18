@@ -12,9 +12,11 @@ defmodule Uploadex.Upload do
 
   alias Uploadex.FileProcessing
 
+  @impl true
   def type, do: :string
 
   @spec cast(upload_path | upload_binary) :: {:ok, upload_path} | {:ok, upload_binary} | :error | {:error, keyword()}
+  @impl true
   def cast(%{filename: filename, path: path}) do
     {:ok, %{
       filename: generate_filename(filename),
@@ -42,11 +44,20 @@ defmodule Uploadex.Upload do
   defp generate_filename(filename), do: Ecto.UUID.generate() <> Path.extname(filename)
 
   @spec load(any) :: :error | {:ok, binary}
+  @impl true
   def load(filename) when is_binary(filename), do: {:ok, filename}
   def load(_), do: :error
 
   @spec dump(any) :: :error | {:ok, any}
+  @impl true
   def dump(%{filename: filename}), do: {:ok, filename}
   def dump(filename) when is_binary(filename), do: {:ok, filename}
   def dump(_), do: :error
+
+  @impl true
+  def equal?(file1, file2) when is_binary(file1) and is_binary(file2), do: file1 == file2
+  def equal?(%{filename: file1}, %{filename: file2}) when is_binary(file1) and is_binary(file2), do: file1 == file2
+
+  @impl true
+  def embed_as(_format), do: :dump
 end
