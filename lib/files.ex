@@ -70,14 +70,8 @@ defmodule Uploadex.Files do
     |> do_delete_files(record, storage_opts)
   end
 
-  defp do_delete_files([file | remaining_files], record, {storage, opts}) do
-    case apply(storage, :delete, [file, opts]) do
-      :ok -> do_delete_files(remaining_files, record, {storage, opts})
-      {:error, error} -> {:error, error}
-    end
-  end
-
-  defp do_delete_files([], record, _storage_opts) do
+  defp do_delete_files(files, record, {storage, opts}) do
+    Enum.each(files, fn file -> apply(storage, :delete, [file, opts]) end)
     {:ok, record}
   end
 
