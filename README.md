@@ -11,7 +11,7 @@ The package can be installed by adding `uploadex` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:uploadex, "~> 1.0.3"}
+    {:uploadex, "~> 1.0.4"}
   ]
 end
 ```

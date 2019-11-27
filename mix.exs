@@ -4,7 +4,7 @@ defmodule Uploadex.MixProject do
   def project do
     [
       app: :uploadex,
-      version: "1.0.3",
+      version: "1.0.4",
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
