@@ -55,8 +55,12 @@ defmodule Uploadex.Upload do
   def dump(_), do: :error
 
   @impl true
-  def equal?(file1, file2) when is_binary(file1) and is_binary(file2), do: file1 == file2
-  def equal?(%{filename: file1}, %{filename: file2}) when is_binary(file1) and is_binary(file2), do: file1 == file2
+  def equal?(file1, file2) do
+    get_filename(file1) == get_filename(file2)
+  end
+
+  defp get_filename(%{filename: filename}), do: filename
+  defp get_filename(filename), do: filename
 
   @impl true
   def embed_as(_format), do: :dump

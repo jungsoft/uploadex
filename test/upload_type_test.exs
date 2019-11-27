@@ -55,4 +55,19 @@ defmodule UploadTypeTest do
       assert {:ok, @path} == Upload.load(@path)
     end
   end
+
+  describe "equal?/2" do
+    test "returns true when filename is the same" do
+      assert Upload.equal?(@path, @path)
+      assert Upload.equal?(%{filename: @path}, @path)
+      assert Upload.equal?(%{filename: @path}, %{filename: @path})
+    end
+
+    test "returns false when filename is not the same" do
+      refute Upload.equal?(@path, @path <> "123")
+      refute Upload.equal?(%{filename: @path}, @path <> "123")
+      refute Upload.equal?(%{filename: @path}, %{filename: @path <> "123"})
+      refute Upload.equal?(nil, @path)
+    end
+  end
 end
