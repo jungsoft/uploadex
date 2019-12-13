@@ -112,6 +112,38 @@ defmodule Uploadex.Files do
     |> Enum.map(fn file -> apply(storage, :get_url, [file, opts]) end)
   end
 
+  @spec get_temporary_file(record, String.t) :: String.t() | nil | {:error, String.t()}
+  def get_temporary_file(record, path) do
+    record
+    |> get_temporary_files(path)
+    |> case do
+      [file] -> file
+      [] -> nil
+      _ -> {:error, "This record has more than one file."}
+    end
+  end
+
+  @spec get_temporary_file(record, String.t(), String.t()) :: String.t() | nil | {:error, String.t()}
+  def get_temporary_file(record, file, path) do
+    record
+    |> get_temporary_files(file, path)
+    |> List.first()
+  end
+
+  @spec get_temporary_files(record, String.t) :: [String.t()]
+  def get_temporary_files(record, path) do
+    get_temporary_files(record, wrap_files(record), path)
+  end
+
+  @spec get_temporary_files(record, String.t() | [String.t()], String.t) :: [String.t()]
+  def get_temporary_files(record, files, path) do
+    {storage, opts} = get_storage_opts(record)
+
+    files
+    |> List.wrap()
+    |> Enum.map(fn file -> apply(storage, :get_temporary_file, [file, path, opts]) end)
+  end
+
   # Get storage opts considering default values
   defp get_storage_opts(record) do
     {storage, opts} = uploader!().storage(record)
