@@ -36,23 +36,43 @@ defmodule Uploadex.FileStorage do
   def delete(%{filename: filename}, opts), do: delete(filename, opts)
   def delete(filename, opts) when is_binary(filename) do
     opts
-    |> get_full_path_directory()
-    |> Path.join(filename)
+    |> get_file_full_path(filename)
     |> File.rm()
   end
 
   @impl true
   def get_url(%{filename: filename}, opts), do: get_url(filename, opts)
   def get_url(filename, opts) when is_binary(filename) do
-    full_path =
-      opts
-      |> get_full_path_directory()
-      |> Path.join(filename)
+    full_path = get_file_full_path(opts, filename)
 
     base_path = Keyword.fetch!(opts, :base_path)
     base_url = Keyword.fetch!(opts, :base_url)
 
     String.replace(full_path, base_path, base_url)
+  end
+
+  @impl true
+  def get_temporary_file(%{filename: filename}, path, opts), do: get_temporary_file(filename, path, opts)
+  def get_temporary_file(filename, path, opts) when is_binary(filename) do
+    delay = Keyword.get(opts, :delete_after, 30_000)
+    full_path = get_file_full_path(opts, filename)
+
+    destination_file = Ecto.UUID.generate() <> Path.extname(filename)
+    destination_path = Path.join(path, destination_file)
+
+    File.cp!(full_path, destination_path)
+    delete_file_after_delay(delay, destination_path)
+  end
+
+  def delete_file_after_delay(delay, path) do
+    TaskAfter.task_after(delay, fn -> File.rm(path) end)
+    path
+  end
+
+  defp get_file_full_path(opts, filename) do
+    opts
+    |> get_full_path_directory()
+    |> Path.join(filename)
   end
 
   defp get_full_path_directory(opts) do

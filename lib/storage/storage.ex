@@ -21,4 +21,9 @@ defmodule Uploadex.Storage do
   Returns the file's URL
   """
   @callback get_url(file, opts) :: String.t()
+
+  @doc """
+  Returns the path of a temporary file, that will be deleted after the configured amount of time.
+  """
+  @callback get_temporary_file(file, String.t, opts) :: String.t()
 end
