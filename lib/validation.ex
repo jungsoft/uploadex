@@ -1,7 +1,9 @@
 defmodule Uploadex.Validation do
   @moduledoc false
 
-  @spec validate_extensions(list(any()), any()) :: :ok | {:error, any()}
+  @type file :: map() | String.t
+
+  @spec validate_extensions([file], [String.t] | any) :: :ok | {:error, any()}
   def validate_extensions(files, accepted_extensions) do
     case all_extensions_accepted?(files, accepted_extensions) do
       true ->

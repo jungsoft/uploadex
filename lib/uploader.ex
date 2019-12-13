@@ -36,7 +36,7 @@ defmodule Uploadex.Uploader do
   @callback get_files(record) :: file | [file]
   @callback default_opts(module :: atom()) :: opts :: Keyword.t
   @callback storage(record) :: {module :: atom(), opts :: Keyword.t}
-  @callback accepted_extensions(record) :: list(String.t)
+  @callback accepted_extensions(record) :: [String.t] | :any
 
   @optional_callbacks accepted_extensions: 1
 end
