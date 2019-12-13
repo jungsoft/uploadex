@@ -49,6 +49,8 @@ defmodule Uploadex.MixProject do
       # Runtime checks and doc
       {:ex_doc, "~> 0.19", only: :dev, runtime: false},
       {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
+      # Temporary files
+      {:task_after, "~> 1.0.0"},
     ]
   end
 end
