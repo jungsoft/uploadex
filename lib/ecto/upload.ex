@@ -7,8 +7,8 @@ defmodule Uploadex.Upload do
 
   @behaviour Ecto.Type
 
-  @type upload_path :: %{filename: String.t(), path: Path.t()}
-  @type upload_binary :: %{filename: String.t(), binary: String.t()}
+  @type upload_path :: %{filename: String.t, path: Path.t}
+  @type upload_binary :: %{filename: String.t, binary: String.t}
 
   alias Uploadex.FileProcessing
 

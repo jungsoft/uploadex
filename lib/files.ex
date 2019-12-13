@@ -80,7 +80,7 @@ defmodule Uploadex.Files do
     old_files -- new_files
   end
 
-  @spec get_file_url(record) :: String.t() | nil | {:error, String.t()}
+  @spec get_file_url(record) :: String.t | nil | {:error, String.t}
   def get_file_url(record) do
     record
     |> get_files_url()
@@ -91,19 +91,19 @@ defmodule Uploadex.Files do
     end
   end
 
-  @spec get_file_url(record, String.t()) :: String.t() | nil | {:error, String.t()}
+  @spec get_file_url(record, String.t) :: String.t | nil | {:error, String.t}
   def get_file_url(record, file) do
     record
     |> get_files_url(file)
     |> List.first()
   end
 
-  @spec get_files_url(record) :: [String.t()]
+  @spec get_files_url(record) :: [String.t]
   def get_files_url(record) do
     get_files_url(record, wrap_files(record))
   end
 
-  @spec get_files_url(record, String.t() | [String.t()]) :: [String.t()]
+  @spec get_files_url(record, String.t | [String.t]) :: [String.t]
   def get_files_url(record, files) do
     {storage, opts} = get_storage_opts(record)
 
@@ -112,7 +112,7 @@ defmodule Uploadex.Files do
     |> Enum.map(fn file -> apply(storage, :get_url, [file, opts]) end)
   end
 
-  @spec get_temporary_file(record, String.t) :: String.t() | nil | {:error, String.t()}
+  @spec get_temporary_file(record, String.t) :: String.t | nil | {:error, String.t}
   def get_temporary_file(record, path) do
     record
     |> get_temporary_files(path)
@@ -123,19 +123,19 @@ defmodule Uploadex.Files do
     end
   end
 
-  @spec get_temporary_file(record, String.t(), String.t()) :: String.t() | nil | {:error, String.t()}
+  @spec get_temporary_file(record, String.t, String.t) :: String.t | nil | {:error, String.t}
   def get_temporary_file(record, file, path) do
     record
     |> get_temporary_files(file, path)
     |> List.first()
   end
 
-  @spec get_temporary_files(record, String.t) :: [String.t()]
+  @spec get_temporary_files(record, String.t) :: [String.t]
   def get_temporary_files(record, path) do
     get_temporary_files(record, wrap_files(record), path)
   end
 
-  @spec get_temporary_files(record, String.t() | [String.t()], String.t) :: [String.t()]
+  @spec get_temporary_files(record, String.t | [String.t], String.t) :: [String.t]
   def get_temporary_files(record, files, path) do
     {storage, opts} = get_storage_opts(record)
 
