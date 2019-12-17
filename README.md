@@ -20,21 +20,9 @@ end
 
 Follow these steps to use Uploadex:
 
-### 1: Config
+### 1: Uploader
 
-This library relies heavily on pattern matching for configuration, so the first step is to define your Uploader configuration module. In your `config.exs`:
-
-```elixir
-config :uploadex,
-  uploader: MyApp.PhotoUploader,
-  repo: MyApp.Repo
-```
-
-Note that the `Repo` is only necessary if using [Uploadex](https://hexdocs.pm/uploadex/Uploadex.html) context helper functions.
-
-### 2: Uploader
-
-Then, define your uploader:
+This library relies heavily on pattern matching for configuration, so the first step is to define your Uploader configuration module:
 
 ```elixir
 defmodule MyApp.Uploader do
@@ -48,7 +36,7 @@ defmodule MyApp.Uploader do
   def get_files(%Company{photo: photo}), do: photo
 
   @impl true
-  def default_opts(Uploadex.FileStorage), do: [base_path: :code.priv_dir(:my_app), base_url: Endpoint.url()]
+  def default_opts(Uploadex.FileStorage), do: [base_path: Path.join(:code.priv_dir(:my_app), "static/"), base_url: Endpoint.url()]
   def default_opts(Uploadex.S3Storage), do: [bucket: "my_bucket", region: "sa-east-1", upload_opts: [acl: :public_read]]
 
   @impl true
@@ -63,6 +51,18 @@ end
 ```
 
 This example shows the configuration for the [Uploadex.FileStorage](https://hexdocs.pm/uploadex/Uploadex.FileStorage.html#content) and [Uploadex.S3Storage](https://hexdocs.pm/uploadex/Uploadex.S3Storage.html#content) implementations, but you are free to implement your own [Storage](https://hexdocs.pm/uploadex/Uploadex.Storage.html#content).
+
+### 2: Config
+
+Then, set your Upload module in your `config.exs`:
+
+```elixir
+config :uploadex,
+  uploader: MyApp.Uploader,
+  repo: MyApp.Repo
+```
+
+Note that the `Repo` is only necessary if using [Uploadex](https://hexdocs.pm/uploadex/Uploadex.html) context helper functions.
 
 ### 3: Schema
 
@@ -110,7 +110,9 @@ defmodule MyApp.Accounts do
 end
 ```
 
-For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module directly.
+You can also use the [Resolver](https://hexdocs.pm/uploadex/Uploadex.Resolver.html#content) module to integrate with Absinthe when exposing the files through a GraphQL API.
+
+For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module directly, which provides some extra functionalities, such as `get_temporary_file`, useful when the files are not publicly available.
 
 ## Motivation
 
@@ -119,3 +121,4 @@ Even though there already exists a library for uploading files that integrates w
 * arc_ecto does not support upload of binary files
 * Uploadex makes it easier to deal with records that contain files without having to manage those files manually on every operation
 * Using uploadex, the changeset operations have no side-effects and no special casting is needed
+* Uploadex offers more flexibility by allowing to define different storage configurations for each struct in the application
