@@ -32,21 +32,21 @@ defmodule MyApp.Uploader do
   alias MyAppWeb.Endpoint
 
   @impl true
-  def get_files(%User{photo: photo}), do: photo
-  def get_files(%Company{photo: photo}), do: photo
+  def get_fields(%User{}), do: :photo
+  def get_fields(%Company{}), do: [:photo]
 
   @impl true
   def default_opts(Uploadex.FileStorage), do: [base_path: Path.join(:code.priv_dir(:my_app), "static/"), base_url: Endpoint.url()]
   def default_opts(Uploadex.S3Storage), do: [bucket: "my_bucket", region: "sa-east-1", upload_opts: [acl: :public_read]]
 
   @impl true
-  def storage(%User{id: id} = user), do: {Uploadex.FileStorage, directory: "/uploads/users/#{id}"}
-  def storage(%Company{} = company), do: {Uploadex.S3Storage, directory: "/thumbnails"}
+  def storage(%User{id: id}, :photo), do: {Uploadex.FileStorage, directory: "/uploads/users/#{id}"}
+  def storage(%Company{}, _field), do: {Uploadex.S3Storage, directory: "/thumbnails"}
 
   # Optional:
   @impl true
-  def accepted_extensions(%User{}), do: ~w(.jpg .png)
-  def accepted_extensions(_any), do: :any
+  def accepted_extensions(%User{}, :photo), do: ~w(.jpg .png)
+  def accepted_extensions(_any, _photo), do: :any
 end
 ```
 

@@ -4,6 +4,7 @@ defmodule Uploadex.Files do
   """
 
   @type record :: any()
+  @type record_field :: atom()
 
   alias Uploadex.Validation
 
@@ -16,30 +17,28 @@ defmodule Uploadex.Files do
   """
   @spec store_files(record) :: {:ok, record} | {:error, any()}
   def store_files(record) do
-    storage_opts = get_storage_opts(record)
     files = wrap_files(record)
     extensions = get_accepted_extensions(record)
 
     case Validation.validate_extensions(files, extensions) do
       :ok ->
         files
-        |> Enum.filter(&is_map/1)
-        |> do_store_files(record, storage_opts)
+        |> Enum.filter(fn {file, _, _} -> is_map(file) end)
+        |> do_store_files(record)
 
-      error ->
-        error
+      error -> error
     end
   end
 
   # Recursively stores all files, stopping if one operation fails.
-  defp do_store_files([file | remaining_files], record, {storage, opts}) do
+  defp do_store_files([{file, _field, {storage, opts}} | remaining_files], record) do
     case apply(storage, :store, [file, opts]) do
-      :ok -> do_store_files(remaining_files, record, {storage, opts})
+      :ok -> do_store_files(remaining_files, record)
       {:error, error} -> {:error, error}
     end
   end
 
-  defp do_store_files([], record, _storage_opts) do
+  defp do_store_files([], record) do
     {:ok, record}
   end
 
@@ -48,14 +47,12 @@ defmodule Uploadex.Files do
   """
   @spec delete_previous_files(record, record) :: {:ok, record} | {:error, any()}
   def delete_previous_files(new_record, previous_record) do
-    storage_opts = get_storage_opts(new_record)
-
     new_files = wrap_files(new_record)
     old_files = wrap_files(previous_record)
 
     new_files
     |> get_changed_files(old_files)
-    |> do_delete_files(new_record, storage_opts)
+    |> do_delete_files(new_record)
   end
 
   @doc """
@@ -63,15 +60,13 @@ defmodule Uploadex.Files do
   """
   @spec delete_files(record) :: {:ok, record} | {:error, any()}
   def delete_files(record) do
-    storage_opts = get_storage_opts(record)
-
     record
     |> wrap_files()
-    |> do_delete_files(record, storage_opts)
+    |> do_delete_files(record)
   end
 
-  defp do_delete_files(files, record, {storage, opts}) do
-    Enum.each(files, fn file -> apply(storage, :delete, [file, opts]) end)
+  defp do_delete_files(files, record) do
+    Enum.each(files, fn {file, _field, {storage, opts}} -> apply(storage, :delete, [file, opts]) end)
     {:ok, record}
   end
 
@@ -80,92 +75,95 @@ defmodule Uploadex.Files do
     old_files -- new_files
   end
 
-  @spec get_file_url(record) :: String.t | nil | {:error, String.t}
-  def get_file_url(record) do
+  @spec get_file_url(record, String.t, record_field) :: String.t | nil | {:error, String.t}
+  def get_file_url(record, file, field) do
     record
-    |> get_files_url()
-    |> case do
-      [file] -> file
-      [] -> nil
-      _ -> {:error, "This record has more than one file."}
-    end
-  end
-
-  @spec get_file_url(record, String.t) :: String.t | nil | {:error, String.t}
-  def get_file_url(record, file) do
-    record
-    |> get_files_url(file)
+    |> get_files_url(file, field)
     |> List.first()
   end
 
-  @spec get_files_url(record) :: [String.t]
-  def get_files_url(record) do
-    get_files_url(record, wrap_files(record))
+  @spec get_files_url(record, record_field) :: [String.t]
+  def get_files_url(record, field) do
+    get_files_url(record, wrap_files(record, field), field)
   end
 
-  @spec get_files_url(record, String.t | [String.t]) :: [String.t]
-  def get_files_url(record, files) do
-    {storage, opts} = get_storage_opts(record)
-
+  @spec get_files_url(record, String.t | [String.t], record_field) :: [String.t]
+  def get_files_url(record, files, field) do
     files
     |> List.wrap()
-    |> Enum.map(fn file -> apply(storage, :get_url, [file, opts]) end)
+    |> Enum.map(fn
+      %{filename: _filename} = file ->
+        {storage, opts} = get_storage_opts(record, field)
+        apply(storage, :get_url, [file, opts])
+
+      {file, _field, {storage, opts}} ->
+        apply(storage, :get_url, [file, opts])
+    end)
   end
 
-  @spec get_temporary_file(record, String.t) :: String.t | nil | {:error, String.t}
-  def get_temporary_file(record, path) do
+  @spec get_temporary_file(record, String.t, String.t, record_field) :: String.t | nil | {:error, String.t}
+  def get_temporary_file(record, file, path, field) do
     record
-    |> get_temporary_files(path)
-    |> case do
-      [file] -> file
-      [] -> nil
-      _ -> {:error, "This record has more than one file."}
-    end
-  end
-
-  @spec get_temporary_file(record, String.t, String.t) :: String.t | nil | {:error, String.t}
-  def get_temporary_file(record, file, path) do
-    record
-    |> get_temporary_files(file, path)
+    |> get_temporary_files(file, path, field)
     |> List.first()
   end
 
-  @spec get_temporary_files(record, String.t) :: [String.t]
-  def get_temporary_files(record, path) do
-    get_temporary_files(record, wrap_files(record), path)
+  @spec get_temporary_files(record, String.t, record_field) :: [String.t]
+  def get_temporary_files(record, path, field) do
+    get_temporary_files(record, wrap_files(record), path, field)
   end
 
-  @spec get_temporary_files(record, String.t | [String.t], String.t) :: [String.t]
-  def get_temporary_files(record, files, path) do
-    {storage, opts} = get_storage_opts(record)
-
+  @spec get_temporary_files(record, String.t | [String.t], String.t, record_field) :: [String.t]
+  def get_temporary_files(record, files, path, field) do
     files
     |> List.wrap()
-    |> Enum.map(fn file -> apply(storage, :get_temporary_file, [file, path, opts]) end)
+    |> Enum.map(fn
+      %{filename: _filename} = file ->
+        {storage, opts} = get_storage_opts(record, field)
+        apply(storage, :get_temporary_file, [file, path, opts])
+
+      {file, _field, {storage, opts}} ->
+        apply(storage, :get_temporary_file, [file, path, opts])
+    end)
   end
 
   # Get storage opts considering default values
-  defp get_storage_opts(record) do
-    {storage, opts} = uploader!().storage(record)
+  defp get_storage_opts(record, field) do
+    {storage, opts} = uploader!().storage(record, field)
     default_opts = uploader!().default_opts(storage)
 
     {storage, Keyword.merge(default_opts, opts)}
   end
 
-  # Wraps the user defined `get_files` function to always return a list
-  defp wrap_files(record) do
+  # Wraps the user defined `get_fields` function to always return a list
+  defp wrap_files(record, field \\ nil) do
     uploader = uploader!()
 
-    record
-    |> uploader.get_files()
+    field
+    |> Kernel.||(uploader.get_fields(record))
     |> List.wrap()
+    |> Enum.map(fn field ->
+      case Map.get(record, field) do
+        result when is_list(result) -> Enum.map(result, & ({&1, field, get_storage_opts(record, field)}))
+        result when is_map(result) -> {result, field, get_storage_opts(record, field)}
+        result when is_binary(result) -> {result, field, get_storage_opts(record, field)}
+        nil -> nil
+      end
+    end)
+    |> List.flatten()
     |> Enum.reject(&is_nil/1)
   end
 
   defp get_accepted_extensions(record) do
-    case function_exported?(uploader!(), :accepted_extensions, 1) do
-      true -> uploader!().accepted_extensions(record)
-      false -> :any
+    case function_exported?(uploader!(), :accepted_extensions, 2) do
+      true ->
+        record
+        |> uploader!().get_fields()
+        |> List.wrap()
+        |> Enum.into(%{}, fn field -> {field, uploader!().accepted_extensions(record, field)} end)
+
+      false ->
+        :any
     end
   end
 end
