@@ -25,26 +25,23 @@ defmodule Uploadex.Resolver do
 
   alias Uploadex.Files
 
-  @spec get_file_url(any, any, any) :: {:error, any} | {:ok, any}
-  def get_file_url(record, _, _) do
-    case Files.get_file_url(record) do
-      {:error, error} -> {:error, error}
-      file -> {:ok, file}
-    end
+  @spec get_file_url(any) :: (any, any, any -> {:ok, any})
+  def get_file_url(field) do
+    fn record, _, _ -> {:ok, record |> Files.get_files_url(field) |> List.first()} end
   end
 
-  @spec get_file_url(any, any) :: {:ok, any}
-  def get_file_url(record, file) do
-    {:ok, Files.get_file_url(record, file)}
+  @spec get_file_url(any, any, any) :: {:ok, any}
+  def get_file_url(record, file, field) do
+    {:ok, Files.get_file_url(record, file, field)}
+  end
+
+  @spec get_files_url(any) :: (any, any, any -> {:ok, [any]})
+  def get_files_url(field) do
+    fn record, _, _ -> {:ok, Files.get_files_url(record, field)} end
   end
 
   @spec get_files_url(any, any, any) :: {:ok, [any]}
-  def get_files_url(record, _, _) do
-    {:ok, Files.get_files_url(record)}
-  end
-
-  @spec get_files_url(any, any) :: {:ok, [any]}
-  def get_files_url(record, files) do
-    {:ok, Files.get_files_url(record, files)}
+  def get_files_url(record, files, field) do
+    {:ok, Files.get_files_url(record, files, field)}
   end
 end

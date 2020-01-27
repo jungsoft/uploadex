@@ -40,40 +40,27 @@ defmodule UploadexTest do
     end
 
     test "with changed files" do
-      assert {:ok, %{}} = Files.delete_previous_files(%User{files: [%{filename: "2.jpg"}]}, %User{})
+      assert {:ok, %{}} = Files.delete_previous_files(%User{files: [%{filename: "2.jpg"}, "3.jpg"]}, %User{})
       assert [%{filename: "1.jpg"}] == TestStorage.get_deleted()
     end
   end
 
   describe "get_file_url" do
-    test "when record only has one file" do
-      user = %User{files: [%{filename: "file"}]}
-      assert "file" == Files.get_file_url(user)
-    end
-
-    test "when record only has many files" do
-      assert {:error, "This record has more than one file."} == Files.get_file_url(%User{})
-    end
-
-    test "when record has no files" do
-      assert nil == Files.get_file_url(%User{files: []})
-    end
-
     test "selecting the files" do
       %{files: [file1, _file2]} = user = %User{}
-      assert file1.filename == Files.get_file_url(user, file1)
+      assert file1.filename == Files.get_file_url(user, file1, :files)
     end
   end
 
   describe "get_files_url" do
     test "returns all files in a list" do
       user = %User{}
-      assert Enum.map(user.files, & &1.filename) == Files.get_files_url(user)
+      assert Enum.map(user.files, & &1.filename) == Files.get_files_url(user, :files)
     end
 
     test "returns the selected files in a list" do
       %{files: [file1, _file2]} = user = %User{}
-      assert [file1.filename] == Files.get_files_url(user, file1)
+      assert [file1.filename] == Files.get_files_url(user, file1, :files)
     end
   end
 
@@ -81,7 +68,7 @@ defmodule UploadexTest do
     test "is passed to the storage considering default opts" do
       user = %User{files: [%{filename: "file.png"}]}
       default_opts = TestUploader.default_opts(TestStorage)
-      {TestStorage, custom_opts} = TestUploader.storage(user)
+      {TestStorage, custom_opts} = TestUploader.storage(user, :files)
 
       {:ok, _} = Files.store_files(user)
       assert Keyword.merge(default_opts, custom_opts) == TestStorage.get_opts()

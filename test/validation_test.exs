@@ -8,15 +8,14 @@ defmodule ValidationTest do
       assert :ok == Validation.validate_extensions(["anything"], :any)
     end
 
-    test "handles both maps and strings" do
-      assert :ok == Validation.validate_extensions([%{filename: "1.jpg"}, "2.jpg"], ".jpg")
-      assert {:error, _} = Validation.validate_extensions([%{filename: "1.jpg"}, "2.png"], ".jpg")
-      assert {:error, _} = Validation.validate_extensions([%{filename: "1.png"}, "2.jpg"], ".jpg")
+    test "should validate extensions" do
+      assert :ok == Validation.validate_extensions([{%{filename: "1.jpg"}, :field, {}}], ".jpg")
+      assert {:error, _msg} = Validation.validate_extensions([{%{filename: "2.png"}, :field, {}}], ".jpg")
     end
 
     test "handles uppercase extensions" do
-      assert :ok == Validation.validate_extensions(["AAA.JPG"], ".jpg")
-      assert :ok == Validation.validate_extensions(["AAA.JpG"], ".jpg")
+      assert :ok == Validation.validate_extensions([{%{filename: "AAA.JPG"}, :field, {}}], ".jpg")
+      assert :ok == Validation.validate_extensions([{%{filename: "AAA.JpG"}, :field, {}}], ".jpg")
     end
   end
 end
