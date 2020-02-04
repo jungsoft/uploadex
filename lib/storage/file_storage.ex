@@ -16,7 +16,7 @@ defmodule Uploadex.FileStorage do
 
       def default_opts(Uploadex.FileStorage), do: [base_path: :code.priv_dir(:my_app), base_url: Endpoint.url()]
 
-      def storage(%User{} = user), do: {Uploadex.FileStorage, directory: "/uploads/users"}
+      def storage(%User{} = user, :photo), do: {Uploadex.FileStorage, directory: "/uploads/users"}
   """
 
   @behaviour Uploadex.Storage
@@ -42,13 +42,14 @@ defmodule Uploadex.FileStorage do
 
   @impl true
   def get_url(%{filename: filename}, opts), do: get_url(filename, opts)
+
   def get_url(filename, opts) when is_binary(filename) do
     full_path = get_file_full_path(opts, filename)
 
     base_path = Keyword.fetch!(opts, :base_path)
     base_url = Keyword.fetch!(opts, :base_url)
 
-    String.replace(full_path, base_path, base_url)
+    {:ok, String.replace(full_path, base_path, base_url)}
   end
 
   @impl true

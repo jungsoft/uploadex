@@ -48,19 +48,19 @@ defmodule UploadexTest do
   describe "get_file_url" do
     test "selecting the files" do
       %{files: [file1, _file2]} = user = %User{}
-      assert file1.filename == Files.get_file_url(user, file1, :files)
+      assert {:ok, file1.filename} == Files.get_file_url(user, file1, :files)
     end
   end
 
   describe "get_files_url" do
     test "returns all files in a list" do
       user = %User{}
-      assert Enum.map(user.files, & &1.filename) == Files.get_files_url(user, :files)
+      assert {:ok, Enum.map(user.files, & &1.filename)} == Files.get_files_url(user, :files)
     end
 
     test "returns the selected files in a list" do
       %{files: [file1, _file2]} = user = %User{}
-      assert [file1.filename] == Files.get_files_url(user, file1, :files)
+      assert {:ok, [file1.filename]} == Files.get_files_url(user, file1, :files)
     end
   end
 

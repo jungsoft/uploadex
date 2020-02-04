@@ -7,19 +7,13 @@ defmodule Uploadex.Resolver do
     In your Absinthe schema, assuming user only has one photo:
 
       object :user do
-        field :photo_url, :string, resolve: &Uploadex.Resolver.get_file_url/3
+        field :photo_url, :string, resolve: Uploadex.Resolver.get_file_url(:photo)
       end
 
     If it has many photos:
 
       object :user do
-        field :photos, list_of(:string), resolve: &Uploadex.Resolver.get_files_url/3
-      end
-
-    If an object has many files but the field is for a specific one:
-
-      object :company do
-        field :logo_url, :string, resolve: fn company, _, _ -> Uploadex.Resolver.get_file_url(company, company.logo) end
+        field :photos, list_of(:string), resolve: Uploadex.Resolver.get_files_url(:photos)
       end
   """
 
@@ -27,21 +21,15 @@ defmodule Uploadex.Resolver do
 
   @spec get_file_url(any) :: (any, any, any -> {:ok, any})
   def get_file_url(field) do
-    fn record, _, _ -> {:ok, record |> Files.get_files_url(field) |> List.first()} end
-  end
+    fn record, _, _ ->
+      {status, result} = Files.get_files_url(record, field)
 
-  @spec get_file_url(any, any, any) :: {:ok, any}
-  def get_file_url(record, file, field) do
-    {:ok, Files.get_file_url(record, file, field)}
+      {status, result |> List.wrap() |> List.first()}
+    end
   end
 
   @spec get_files_url(any) :: (any, any, any -> {:ok, [any]})
   def get_files_url(field) do
-    fn record, _, _ -> {:ok, Files.get_files_url(record, field)} end
-  end
-
-  @spec get_files_url(any, any, any) :: {:ok, [any]}
-  def get_files_url(record, files, field) do
-    {:ok, Files.get_files_url(record, files, field)}
+    fn record, _, _ -> Files.get_files_url(record, field) end
   end
 end

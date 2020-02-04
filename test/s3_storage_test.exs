@@ -3,7 +3,7 @@ defmodule S3StorageTest do
 
   alias Uploadex.S3Storage
 
-  @opts [bucket: "my-bucket", region: "sa-east-1", directory: "thumbnails"]
+  @opts [bucket: "my-bucket", region: "sa-east-1", directory: "/thumbnails/"]
 
   describe "get_url/2" do
     test "accepts both a map with filename and the filename directly" do
@@ -11,7 +11,8 @@ defmodule S3StorageTest do
     end
 
     test "builds the URL correctly" do
-      assert "https://my-bucket.s3-sa-east-1.amazonaws.com/thumbnails/filename.jpg" == S3Storage.get_url("filename.jpg", @opts)
+      assert {:ok, link} = S3Storage.get_url("filename.jpg", @opts)
+      assert String.starts_with?(link, "https://s3.amazonaws.com/my-bucket/thumbnails/filename.jpg?")
     end
   end
 end

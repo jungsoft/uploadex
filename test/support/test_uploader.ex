@@ -10,7 +10,7 @@ defmodule TestUploader do
 
   @impl true
   def storage(%User{}, _field) do
-    {Uploadex.TestStorage, [directory: "test/dir"]}
+    {Uploadex.TestStorage, [directory: "/test/dir/"]}
   end
 
   @impl true
