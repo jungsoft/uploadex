@@ -15,7 +15,7 @@ defmodule Uploadex.S3Storage do
 
       def default_opts(Uploadex.S3Storage), do: [bucket: "my_bucket", region: "sa-east-1", upload_opts: [acl: :public_read]]
 
-      def storage(%User{} = user), do: {Uploadex.S3Storage, directory: "/photos"}
+      def storage(%User{} = user, :photo), do: {Uploadex.S3Storage, directory: "/photos"}
   """
 
   @behaviour Uploadex.Storage
@@ -60,16 +60,15 @@ defmodule Uploadex.S3Storage do
 
   @impl true
   def get_url(%{filename: filename}, opts), do: get_url(filename, opts)
+
   def get_url(filename, opts) when is_binary(filename) do
     bucket = Keyword.fetch!(opts, :bucket)
-    region = Keyword.fetch!(opts, :region)
     directory = Keyword.fetch!(opts, :directory)
+    config_s3 = Keyword.fetch!(opts, :config_s3)
 
-    base_url = "https://#{bucket}.s3-#{region}.amazonaws.com"
-
-    base_url
-    |> Path.join(directory)
-    |> Path.join(filename)
+    :s3
+    |> ExAws.Config.new()
+    |> ExAws.S3.presigned_url(:get, bucket, directory <> filename, config_s3)
   end
 
   @impl true

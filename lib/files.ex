@@ -5,6 +5,7 @@ defmodule Uploadex.Files do
 
   @type record :: any()
   @type record_field :: atom()
+  @type status :: :ok | :error
 
   alias Uploadex.Validation
 
@@ -75,19 +76,19 @@ defmodule Uploadex.Files do
     old_files -- new_files
   end
 
-  @spec get_file_url(record, String.t, record_field) :: String.t | nil | {:error, String.t}
+  @spec get_file_url(record, String.t, record_field) :: {status, String.t | nil}
   def get_file_url(record, file, field) do
-    record
-    |> get_files_url(file, field)
-    |> List.first()
+    {status, result} = get_files_url(record, file, field)
+
+    {status, List.first(result)}
   end
 
-  @spec get_files_url(record, record_field) :: [String.t]
+  @spec get_files_url(record, record_field) :: {status, [String.t]}
   def get_files_url(record, field) do
     get_files_url(record, wrap_files(record, field), field)
   end
 
-  @spec get_files_url(record, String.t | [String.t], record_field) :: [String.t]
+  @spec get_files_url(record, String.t | [String.t], record_field) :: {status, [String.t]}
   def get_files_url(record, files, field) do
     files
     |> List.wrap()
@@ -99,6 +100,11 @@ defmodule Uploadex.Files do
       {file, _field, {storage, opts}} ->
         apply(storage, :get_url, [file, opts])
     end)
+    |> Enum.group_by(& elem(&1, 0), & elem(&1, 1))
+    |> case do
+      %{error: errors} -> {:error, errors}
+      %{ok: urls} -> {:ok, urls}
+    end
   end
 
   @spec get_temporary_file(record, String.t, String.t, record_field) :: String.t | nil | {:error, String.t}
