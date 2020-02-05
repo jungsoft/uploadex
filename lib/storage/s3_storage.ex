@@ -64,10 +64,11 @@ defmodule Uploadex.S3Storage do
   def get_url(filename, opts) when is_binary(filename) do
     bucket = Keyword.fetch!(opts, :bucket)
     directory = Keyword.fetch!(opts, :directory)
+    config_s3 = Keyword.fetch!(opts, :config_s3)
 
     :s3
     |> ExAws.Config.new()
-    |> ExAws.S3.presigned_url(:get, bucket, directory <> filename)
+    |> ExAws.S3.presigned_url(:get, bucket, directory <> filename, config_s3)
   end
 
   @impl true
