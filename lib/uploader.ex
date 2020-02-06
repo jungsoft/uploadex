@@ -32,7 +32,7 @@ defmodule Uploadex.Uploader do
 
   @type record :: any()
   @type record_field :: atom()
-  @type file :: map() | String.t
+  @type file :: atom()
 
   @callback get_fields(record) :: file | [file]
   @callback default_opts(module :: atom()) :: opts :: Keyword.t
