@@ -7,15 +7,15 @@ defmodule Uploadex.Upload do
 
   @behaviour Ecto.Type
 
-  @type upload_path :: %{filename: String.t, path: Path.t}
-  @type upload_binary :: %{filename: String.t, binary: String.t}
+  @type upload_path :: %{filename: String.t, path: Path.t, content_type: String.t}
+  @type upload_binary :: %{filename: String.t, binary: String.t, content_type: String.t}
 
   alias Uploadex.FileProcessing
 
   @impl true
   def type, do: :string
 
-  @spec cast(upload_path | upload_binary) :: {:ok, upload_path} | {:ok, upload_binary} | :error | {:error, keyword()}
+  @spec cast(upload_path | upload_binary) :: {:ok, upload_path} | {:ok, upload_binary} | {:error, keyword()}
   @impl true
   def cast(%{filename: filename, path: path, content_type: content_type}) do
     {:ok, %{
@@ -27,15 +27,15 @@ defmodule Uploadex.Upload do
 
   def cast(%{filename: filename, binary: binary}) do
     case FileProcessing.process_binary(binary) do
-      {content_type, {:ok, binary}} ->
+      {:ok, %{binary: binary, content_type: content_type}} ->
         {:ok, %{
           filename: generate_filename(filename),
           binary: binary,
           content_type: content_type
         }}
 
-      error ->
-        error
+      {:error, message} ->
+        {:error, message: message}
     end
   end
 

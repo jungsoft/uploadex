@@ -27,7 +27,7 @@ defmodule UploadTypeTest do
     test "for already processed binary" do
       processed_binary = Base.decode64!("/9j/4AAQSkZJRgABAQAAAQAB")
       upload = %{filename: "filename.jpg", binary: processed_binary}
-      assert {:error, "Invalid base64 format"} = Upload.cast(upload)
+      assert {:error, message: "Invalid base64 format"} = Upload.cast(upload)
     end
 
     test "for string" do
