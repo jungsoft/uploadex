@@ -7,7 +7,8 @@ defmodule Uploadex.S3Storage do
   * `bucket`: String (required for all functions)
   * `region`:  String (required for `c:Uploadex.Storage.get_url/2`)
   * `directory`: String (required for all functions)
-  * `upload_opts`: Keyword list. This opts are passed to `ExAws.S3.upload/4` and `ExAws.S3.put_object/4` (required for `c:Uploadex.Storage.store/2`)
+  * `upload_opts`: Keyword list. This opts are passed to `ExAws.S3.upload/4` and `ExAws.S3.put_object/4` (required for `c:Uploadex.Storage.store/2`).
+      If `content_type` is not specified in `upload_opts`, the default is the upload's content type.
 
   ## Example
 
