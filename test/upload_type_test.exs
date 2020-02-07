@@ -6,7 +6,7 @@ defmodule UploadTypeTest do
 
   describe "cast/1" do
     test "for Plug.Upload" do
-      upload = %{filename: "filename.jpg", path: "my/path/example"}
+      upload = %{filename: "filename.jpg", path: "my/path/example", content_type: "image/jpeg"}
       assert {:ok, %{filename: filename, path: path}} = Upload.cast(upload)
 
       assert upload.path == path
@@ -17,7 +17,7 @@ defmodule UploadTypeTest do
     test "for base64 binary" do
       binary_example = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQAB"
       upload = %{filename: "filename.jpg", binary: binary_example}
-      assert {:ok, %{filename: filename, binary: binary}} = Upload.cast(upload)
+      assert {:ok, %{filename: filename, binary: binary, content_type: "image/jpeg"}} = Upload.cast(upload)
 
       assert Base.decode64!("/9j/4AAQSkZJRgABAQAAAQAB") === binary
       refute upload.filename == filename
@@ -27,11 +27,7 @@ defmodule UploadTypeTest do
     test "for already processed binary" do
       processed_binary = Base.decode64!("/9j/4AAQSkZJRgABAQAAAQAB")
       upload = %{filename: "filename.jpg", binary: processed_binary}
-      assert {:ok, %{filename: filename, binary: binary}} = Upload.cast(upload)
-
-      assert processed_binary == binary
-      refute upload.filename == filename
-      assert String.contains?(filename, ".jpg")
+      assert {:error, "Invalid base64 format"} = Upload.cast(upload)
     end
 
     test "for string" do

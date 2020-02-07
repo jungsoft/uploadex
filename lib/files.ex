@@ -104,6 +104,7 @@ defmodule Uploadex.Files do
     |> case do
       %{error: errors} -> {:error, errors}
       %{ok: urls} -> {:ok, urls}
+      %{} -> {:ok, []}
     end
   end
 

@@ -26,6 +26,8 @@ defmodule Uploadex.Validation do
     end
   end
 
+  defp all_extensions_accepted?(_files, :any), do: true
+
   defp all_extensions_accepted?(files, extensions) do
     list_extensions = List.wrap(extensions)
     Enum.all?(files, & extension_accepted?(&1, list_extensions))

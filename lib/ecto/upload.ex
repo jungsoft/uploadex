@@ -17,19 +17,21 @@ defmodule Uploadex.Upload do
 
   @spec cast(upload_path | upload_binary) :: {:ok, upload_path} | {:ok, upload_binary} | :error | {:error, keyword()}
   @impl true
-  def cast(%{filename: filename, path: path}) do
+  def cast(%{filename: filename, path: path, content_type: content_type}) do
     {:ok, %{
       filename: generate_filename(filename),
-      path: path
+      path: path,
+      content_type: content_type
     }}
   end
 
   def cast(%{filename: filename, binary: binary}) do
     case FileProcessing.process_binary(binary) do
-      {:ok, binary} ->
+      {content_type, {:ok, binary}} ->
         {:ok, %{
           filename: generate_filename(filename),
-          binary: binary
+          binary: binary,
+          content_type: content_type
         }}
 
       error ->
