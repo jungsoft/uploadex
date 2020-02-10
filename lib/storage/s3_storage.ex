@@ -7,7 +7,8 @@ defmodule Uploadex.S3Storage do
   * `bucket`: String (required for all functions)
   * `region`:  String (required for `c:Uploadex.Storage.get_url/2`)
   * `directory`: String (required for all functions)
-  * `upload_opts`: Keyword list. This opts are passed to `ExAws.S3.upload/4` and `ExAws.S3.put_object/4` (required for `c:Uploadex.Storage.store/2`)
+  * `upload_opts`: Keyword list. This opts are passed to `ExAws.S3.upload/4` and `ExAws.S3.put_object/4` (required for `c:Uploadex.Storage.store/2`).
+      If `content_type` is not specified in `upload_opts`, the default is the upload's content type.
 
   ## Example
 
@@ -23,10 +24,13 @@ defmodule Uploadex.S3Storage do
   alias ExAws.S3
 
   @impl true
-  def store(%{filename: filename, path: path}, opts) do
+  def store(%{filename: filename, path: path, content_type: content_type}, opts) do
     bucket = Keyword.fetch!(opts, :bucket)
     directory = Keyword.fetch!(opts, :directory)
-    upload_opts = Keyword.get(opts, :upload_opts, [])
+    upload_opts =
+      opts
+      |> Keyword.get(:upload_opts, [])
+      |> Keyword.put_new(:content_type, content_type)
 
     path
     |> S3.Upload.stream_file()
@@ -35,10 +39,13 @@ defmodule Uploadex.S3Storage do
     |> convert_s3_result()
   end
 
-  def store(%{filename: filename, binary: binary}, opts) do
+  def store(%{filename: filename, binary: binary, content_type: content_type}, opts) do
     bucket = Keyword.fetch!(opts, :bucket)
     directory = Keyword.fetch!(opts, :directory)
-    upload_opts = Keyword.get(opts, :upload_opts, [])
+    upload_opts =
+      opts
+      |> Keyword.get(:upload_opts, [])
+      |> Keyword.put_new(:content_type, content_type)
 
     bucket
     |> S3.put_object(full_path(filename, directory), binary, upload_opts)
@@ -68,7 +75,7 @@ defmodule Uploadex.S3Storage do
 
     :s3
     |> ExAws.Config.new()
-    |> ExAws.S3.presigned_url(:get, bucket, directory <> filename, config_s3)
+    |> ExAws.S3.presigned_url(:get, bucket, Path.join(directory, filename), config_s3)
   end
 
   @impl true
