@@ -12,6 +12,7 @@ defmodule Uploadex do
       alias Uploadex.{
         Context,
         Files,
+        Resolver,
       }
 
       ## Files
@@ -27,11 +28,15 @@ defmodule Uploadex do
       def get_temporary_files(record, path, field), do: Files.get_temporary_files(record, path, field, __MODULE__)
       def get_temporary_files(record, files, path, field), do: Files.get_temporary_files(record, files, path, field, __MODULE__)
 
-      ## Uploadex
+      ## Context
       def create_with_file(changeset, opts \\ []), do: Context.create_with_file(changeset, unquote(repo), opts)
       def update_with_file(changeset, previous_record, opts \\ []), do: Context.update_with_file(changeset, previous_record, unquote(repo), opts)
       def update_with_file_keep_previous(changeset, opts \\ []), do: Context.update_with_file_keep_previous(changeset, unquote(repo), opts)
       def delete_with_file(changeset, opts \\ []), do: Context.delete_with_file(changeset, unquote(repo), opts)
+
+      ## Resolver
+      def get_file_url(field), do: Resolver.get_file_url(field, __MODULE__)
+      def get_files_url(field), do: Resolver.get_files_url(field, __MODULE__)
     end
   end
 end

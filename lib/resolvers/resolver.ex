@@ -17,19 +17,16 @@ defmodule Uploadex.Resolver do
       end
   """
 
-  alias Uploadex.Files
-
-  @spec get_file_url(any) :: (any, any, any -> {:ok, any})
-  def get_file_url(field) do
+  @spec get_file_url(any, any) :: (any, any, any -> {:ok, any})
+  def get_file_url(field, uploader) do
     fn record, _, _ ->
-      {status, result} = Files.get_files_url(record, field)
-
+      {status, result} = uploader.get_files_url(record, field)
       {status, result |> List.wrap() |> List.first()}
     end
   end
 
-  @spec get_files_url(any) :: (any, any, any -> {:ok, [any]})
-  def get_files_url(field) do
-    fn record, _, _ -> Files.get_files_url(record, field) end
+  @spec get_files_url(any, any) :: (any, any, any -> {:ok, [any]})
+  def get_files_url(field, uploader) do
+    fn record, _, _ -> uploader.get_files_url(record, field) end
   end
 end
