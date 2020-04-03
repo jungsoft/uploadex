@@ -29,10 +29,10 @@ defmodule Uploadex do
       def get_temporary_files(record, files, path, field), do: Files.get_temporary_files(record, files, path, field, __MODULE__)
 
       ## Context
-      def create_with_file(changeset, opts \\ []), do: Context.create_with_file(changeset, unquote(repo), opts)
-      def update_with_file(changeset, previous_record, opts \\ []), do: Context.update_with_file(changeset, previous_record, unquote(repo), opts)
-      def update_with_file_keep_previous(changeset, opts \\ []), do: Context.update_with_file_keep_previous(changeset, unquote(repo), opts)
-      def delete_with_file(changeset, opts \\ []), do: Context.delete_with_file(changeset, unquote(repo), opts)
+      def create_with_file(changeset, opts \\ []), do: Context.create_with_file(changeset, unquote(repo), __MODULE__, opts)
+      def update_with_file(changeset, previous_record, opts \\ []), do: Context.update_with_file(changeset, previous_record, unquote(repo), __MODULE__, opts)
+      def update_with_file_keep_previous(changeset, opts \\ []), do: Context.update_with_file_keep_previous(changeset, unquote(repo), __MODULE__, opts)
+      def delete_with_file(changeset, opts \\ []), do: Context.delete_with_file(changeset, unquote(repo), __MODULE__, opts)
 
       ## Resolver
       def get_file_url(field), do: Resolver.get_file_url(field, __MODULE__)
