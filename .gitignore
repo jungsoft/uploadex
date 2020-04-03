@@ -26,3 +26,5 @@ uploadex-*.tar
 
 # Dialyzer
 /priv/plts/
+
+.vscode/

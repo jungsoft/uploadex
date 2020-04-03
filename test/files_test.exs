@@ -4,7 +4,6 @@ defmodule UploadexTest do
 
   alias Uploadex.{
     TestStorage,
-    UploadexUse,
   }
 
   setup do
@@ -13,7 +12,7 @@ defmodule UploadexTest do
   end
 
   defmodule UploadexFiles do
-    use UploadexUse
+    use Uploadex
 
     @impl true
     def get_fields(%User{}), do: :files
