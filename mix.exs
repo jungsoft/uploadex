@@ -17,6 +17,7 @@ defmodule Uploadex.MixProject do
         plt_add_apps: [:ex_unit, :mix, :ex_aws, :ex_aws_s3],
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
       ],
+      aliases: aliases(),
     ]
   end
 
@@ -44,6 +45,8 @@ defmodule Uploadex.MixProject do
     [
       # Ecto
       {:ecto, ">= 3.1.7"},
+      {:ecto_sql, "~> 3.0", only: :test},
+      {:postgrex, ">= 0.0.0", only: :test},
       # For AWS
       {:ex_aws, "~> 2.0", optional: true},
       {:ex_aws_s3, "~> 2.0", optional: true},
@@ -56,6 +59,12 @@ defmodule Uploadex.MixProject do
       {:dialyxir, github: "gabrielpra1/dialyxir", only: [:dev, :test], runtime: false},
       # Temporary files
       {:task_after, "~> 1.0.0"},
+    ]
+  end
+
+  defp aliases do
+    [
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 end

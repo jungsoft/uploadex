@@ -2,6 +2,5 @@ import Mix.Config
 
 config :task_after, global_name: TaskAfter
 
-config :ex_aws, :s3,
-  access_key_id: "test",
-  secret_access_key: "test"
+env_config = "#{Mix.env()}.exs"
+if File.exists?(Path.join("config", env_config)), do: import_config(env_config)
