@@ -1,6 +1,6 @@
 defmodule TestUploader do
   @moduledoc false
-  @behaviour Uploadex.Uploader
+  use Uploadex
 
   @impl true
   def get_fields(%User{}), do: :files
