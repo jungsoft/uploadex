@@ -22,6 +22,8 @@ def deps do
 end
 ```
 
+If you don't want to use the release candiate, go to the [latest stable version documentation](https://github.com/jungsoft/uploadex/tree/v2.0.3).
+
 ## Usage
 
 Follow these steps to use Uploadex:
