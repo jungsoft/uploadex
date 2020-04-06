@@ -4,6 +4,12 @@ Uploadex is an Elixir library for handling uploads that integrates well with [Ec
 
 Documentation can be found at https://hexdocs.pm/uploadex.
 
+## Migrating from v2 to v3
+
+1. In you uploader, change `@behaviour Uploadex.Uploader` to `use Uploadex`
+1. Remove all `config :uploadex` from your configuration fiels
+1. Change all direct functions calls from `Uploadex.Resolver`, `Uploadex.Files` and `Uploadex` to your Uploader module
+
 ## Installation
 
 The package can be installed by adding `uploadex` to your list of dependencies in `mix.exs`:
@@ -11,7 +17,7 @@ The package can be installed by adding `uploadex` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:uploadex, "~> 2.0.3"}
+    {:uploadex, "~> 3.0.0-rc.0"}
   ]
 end
 ```
