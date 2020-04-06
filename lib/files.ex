@@ -1,6 +1,17 @@
 defmodule Uploadex.Files do
   @moduledoc """
   Functions to store and delete files.
+
+  Note that all functions in this module require the Uploader as an argument. You are free to call them like that:
+
+      iex> Uploadex.Files.store_files(user, MyUploader)
+      {:ok, %User{}}
+
+  However, by doing `use Uploadex` in your uploader, you can call these functions directly through the uploader to avoid having to pass this
+  extra argument around:
+
+      iex> MyUploader.store_files(user)
+      {:ok, %User{}}
   """
 
   @type record :: any()

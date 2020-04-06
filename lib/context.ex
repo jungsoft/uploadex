@@ -1,6 +1,17 @@
 defmodule Uploadex.Context do
   @moduledoc """
   Context Helper functions for handling files.
+
+  Note that all functions in this module require the Uploader as an argument. You are free to call them like that:
+
+      iex> Uploadex.Context.create_with_file(changeset, Repo, MyUploader)
+      {:ok, %User{}}
+
+  However, by doing `use Uploadex, repo: Repo` in your uploader, you can call these functions directly through the uploader to avoid having to pass these
+  extra arguments around:
+
+      iex> MyUploader.create_with_file(changeset)
+      {:ok, %User{}}
   """
 
   alias Ecto.{

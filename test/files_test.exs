@@ -54,7 +54,7 @@ defmodule UploadexTest do
   describe "get_files_url" do
     test "returns all files in a list" do
       user = %User{}
-      assert {:ok, Enum.map(user.files, & &1.filename)} == TestUploader.get_files_url(user, :files)
+      assert {:ok, Enum.map(user.files, & &1.filename)} == TestUploader.get_files_url(user, :files) |> IO.inspect()
     end
 
     test "returns the selected files in a list" do
