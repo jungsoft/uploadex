@@ -4,8 +4,9 @@ defmodule User do
   defstruct files: [%{filename: "1.jpg"}, %{filename: "2.jpg"}]
 end
 
-
 defmodule UserSchema do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
 

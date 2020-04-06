@@ -19,6 +19,8 @@ defmodule Uploadex.TestStorage do
 
   def get_opts, do: Agent.get(__MODULE__, & &1.opts)
 
+  def clear_stored, do: Agent.update(__MODULE__, fn state -> Map.put(state, :stored, []) end)
+
   @impl true
   def store(file, opts) do
     Agent.update(__MODULE__, fn state -> Map.update!(state, :stored, & &1 ++ [file]) end)
