@@ -30,6 +30,8 @@ defmodule Uploadex.Uploader do
 
   """
 
+  @type t :: module()
+
   @type record :: any()
   @type record_field :: atom()
   @type file :: atom()

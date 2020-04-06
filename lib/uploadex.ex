@@ -1,63 +1,42 @@
 defmodule Uploadex do
   @moduledoc """
-  Context Helper functions for handling files.
+  Imports functions from Files, Context and Resolver modules, passing itself as a parameter for configuration.
   """
 
-  alias Ecto.Multi
-  alias Uploadex.Files
+  defmacro __using__(opts \\ []) do
+    repo = Keyword.get(opts, :repo)
 
-  defp repo!, do: Application.fetch_env!(:uploadex, :repo)
+    quote do
+      @behaviour Uploadex.Uploader
 
-  @doc """
-  Inserts the changeset and store the record files in a database transaction,
-  so if the files fail to be stored the record will not be created.
-  """
-  def create_with_file(changeset, opts \\ []) do
-    Multi.new()
-    |> Multi.run(:insert, fn _repo, _ -> repo!().insert(changeset, opts) end)
-    |> Multi.run(:store_files, fn _repo, %{insert: record} -> Files.store_files(record) end)
-    |> repo!().transaction()
-    |> convert_result()
-  end
+      alias Uploadex.{
+        Context,
+        Files,
+        Resolver,
+      }
 
-  @doc """
-  Updates the record and its files in a database transaction,
-  so if the files fail to be stored the record will not be created.
+      ## Files
+      def store_files(record), do: Files.store_files(record, __MODULE__)
+      def delete_previous_files(new_record, previous_record), do: Files.delete_previous_files(new_record, previous_record, __MODULE__)
+      def delete_files(record), do: Files.delete_files(record, __MODULE__)
 
-  This function also deletes files that are no longer referenced.
-  """
-  def update_with_file(changeset, previous_record, opts \\ []) do
-    Multi.new()
-    |> Multi.run(:update, fn _repo, _ -> repo!().update(changeset, opts) end)
-    |> Multi.run(:store_files, fn _repo, %{update: record} -> Files.store_files(record) end)
-    |> Multi.run(:delete_file, fn _repo, %{update: record} -> Files.delete_previous_files(record, previous_record) end)
-    |> repo!().transaction()
-    |> convert_result()
-  end
+      def get_file_url(record, file, field), do: Files.get_file_url(record, file, field, __MODULE__)
+      def get_files_url(record, field), do: Files.get_files_url(record, field, __MODULE__)
+      def get_files_url(record, files, field), do: Files.get_files_url(record, files, field, __MODULE__)
 
-  @doc """
-  Similar to `update_with_file/3`, but does not delete previous files.
-  """
-  def update_with_file_keep_previous(changeset, opts \\ []) do
-    Multi.new()
-    |> Multi.run(:update, fn _repo, _ -> repo!().update(changeset, opts) end)
-    |> Multi.run(:store_files, fn _repo, %{update: record} -> Files.store_files(record) end)
-    |> repo!().transaction()
-    |> convert_result()
-  end
+      def get_temporary_file(record, file, path, field), do: Files.get_temporary_file(record, file, field, path, __MODULE__)
+      def get_temporary_files(record, path, field), do: Files.get_temporary_files(record, path, field, __MODULE__)
+      def get_temporary_files(record, files, path, field), do: Files.get_temporary_files(record, files, path, field, __MODULE__)
 
-  @doc """
-  Deletes the record and all of its files.
-  This is not in a database transaction, since the delete operation never returns errors.
-  """
-  def delete_with_file(record, opts \\ []) do
-    case repo!().delete(record, opts) do
-      {:ok, record} -> Files.delete_files(record)
-      {:error, error} -> {:error, error}
+      ## Context
+      def create_with_file(changeset, opts \\ []), do: Context.create_with_file(changeset, unquote(repo), __MODULE__, opts)
+      def update_with_file(changeset, previous_record, opts \\ []), do: Context.update_with_file(changeset, previous_record, unquote(repo), __MODULE__, opts)
+      def update_with_file_keep_previous(changeset, opts \\ []), do: Context.update_with_file_keep_previous(changeset, unquote(repo), __MODULE__, opts)
+      def delete_with_file(changeset, opts \\ []), do: Context.delete_with_file(changeset, unquote(repo), __MODULE__, opts)
+
+      ## Resolver
+      def get_file_url(field), do: Resolver.get_file_url(field, __MODULE__)
+      def get_files_url(field), do: Resolver.get_files_url(field, __MODULE__)
     end
   end
-
-  defp convert_result({:error, _, msg, _}), do: {:error, msg}
-  defp convert_result({:ok, %{insert: record}}), do: {:ok, record}
-  defp convert_result({:ok, %{update: record}}), do: {:ok, record}
 end

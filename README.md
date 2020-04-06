@@ -27,7 +27,9 @@ This library relies heavily on pattern matching for configuration, so the first 
 ```elixir
 defmodule MyApp.Uploader do
   @moduledoc false
-  @behaviour Uploadex.Uploader
+
+  use Uploadex,
+    repo: MyApp.Repo # only necessary if using the functions from Uploadex.Context
 
   alias MyAppWeb.Endpoint
 
@@ -46,25 +48,15 @@ defmodule MyApp.Uploader do
   # Optional:
   @impl true
   def accepted_extensions(%User{}, :photo), do: ~w(.jpg .png)
-  def accepted_extensions(_any, _photo), do: :any
+  def accepted_extensions(_any, _field), do: :any
 end
 ```
 
 This example shows the configuration for the [Uploadex.FileStorage](https://hexdocs.pm/uploadex/Uploadex.FileStorage.html#content) and [Uploadex.S3Storage](https://hexdocs.pm/uploadex/Uploadex.S3Storage.html#content) implementations, but you are free to implement your own [Storage](https://hexdocs.pm/uploadex/Uploadex.Storage.html#content).
 
-### 2: Config
+*Note: To avoid too much metaprogramming magic, the `use` in this module is very simple and, in fact, optional. If you wish to do so, you can just define the `@behaviour Uploadex.Uploader` instead of the `use` and then call all lower level modules directly, passing your Uploader module as argument. The `use` makes life much easier, though!*
 
-Then, set your Upload module in your `config.exs`:
-
-```elixir
-config :uploadex,
-  uploader: MyApp.Uploader,
-  repo: MyApp.Repo
-```
-
-Note that the `Repo` is only necessary if using [Uploadex](https://hexdocs.pm/uploadex/Uploadex.html) context helper functions.
-
-### 3: Schema
+### 2: Schema
 
 In your schema, use the Ecto Type [Uploadex.Upload](https://hexdocs.pm/uploadex/Uploadex.Upload.html#content):
 
@@ -81,38 +73,69 @@ def create_changeset(%User{} = user, attrs) do
 end
 ```
 
-### 4: Enjoy!
+### 3: Enjoy!
 
-Now, you can use the [Uploadex](https://hexdocs.pm/uploadex/Uploadex.html#content) functions to handle your records with their files:
+Now, you can use your defined Uploader to handle your records with their files!
+
+The `use Uploadex` line in your Uploader module will import 3 groups of functions:
+
+#### Context
+
+  The highest level functions are context helpers (see [Context]([Resolver](https://hexdocs.pm/uploadex/Uploadex.Context.html#content)) for more documentation), which will allow you to easily create, update and delete your records with associated files:
+
+  ```elixir
+  defmodule MyApp.Accounts do
+    alias MyApp.Accounts.User
+    alias MyApp.MyUploader
+
+    def create_user(attrs) do
+      %User{}
+      |> User.create_changeset(attrs)
+      |> MyUploader.create_with_file()
+    end
+
+    def update_user(%User{} = user, attrs) do
+      user
+      |> User.update_changeset(attrs)
+      |> MyUploader.update_with_file(user)
+    end
+
+    def delete_user(%User{} = user) do
+      user
+      |> Ecto.Changeset.change()
+      |> MyUploader.delete_with_file()
+    end
+  end
+  ```
+
+#### Resolver
+
+  There are also functions to help you easily fetch the files in Absinthe schemas:
+
+  ```elixir
+  object :user do
+    field :photo_url, :string, resolve: MyUploader.get_file_url(:photo)
+  end
+
+  object :user do
+    field :photos, list_of(:string), resolve: MyUploader.get_files_url(:photos)
+  end
+  ```
+
+  See [Resolver](https://hexdocs.pm/uploadex/Uploadex.Resolver.html#content) for more documentation.
+
+#### Files
+
+If you need more flexibility, you can use the lower-level functions defined in [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content), which provide some extra functionalities, such as `get_temporary_file`, useful when the files are not publicly available.
+
+Some examples:
 
 ```elixir
-defmodule MyApp.Accounts do
-  alias MyApp.Accounts.User
-  alias MyApp.MyUploader
-
-  def create_user(attrs) do
-    %User{}
-    |> User.create_changeset(attrs)
-    |> Uploadex.create_with_file()
-  end
-
-  def update_user(%User{} = user, attrs) do
-    user
-    |> User.update_changeset(attrs)
-    |> Uploadex.update_with_file(user)
-  end
-
-  def delete_user(%User{} = user) do
-    user
-    |> Ecto.Changeset.change()
-    |> Uploadex.delete_with_file()
-  end
-end
+{:ok, %User{}} = MyUploader.store_files(user)
+{:ok, %User{}} = MyUploader.delete_files(user)
+{:ok, %User{}} = MyUploader.delete_previous_files(user, user_after_change)
+{:ok, files} = MyUploader.get_files_url(user, :photos)
 ```
-
-You can also use the [Resolver](https://hexdocs.pm/uploadex/Uploadex.Resolver.html#content) module to integrate with Absinthe when exposing the files through a GraphQL API.
-
-For more flexibility, you can use the [Files](https://hexdocs.pm/uploadex/Uploadex.Files.html#content) module directly, which provides some extra functionalities, such as `get_temporary_file`, useful when the files are not publicly available.
 
 ## Motivation
 
@@ -121,4 +144,5 @@ Even though there already exists a library for uploading files that integrates w
 * arc_ecto does not support upload of binary files
 * Uploadex makes it easier to deal with records that contain files without having to manage those files manually on every operation
 * Using uploadex, the changeset operations have no side-effects and no special casting is needed
-* Uploadex offers more flexibility by allowing to define different storage configurations for each struct in the application
+* Uploadex offers more flexibility by allowing to define different storage configurations for each struct (or even each field in a struct) in the application
+* Uploadex does not rely on global configuration, which makes it easier to work in umbrella applications
