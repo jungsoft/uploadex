@@ -3,12 +3,17 @@ defmodule Uploadex.Context do
   Context Helper functions for handling files.
   """
 
-  alias Ecto.Multi
+  alias Ecto.{
+    Changeset,
+    Multi,
+  }
+  alias Uploadex.Uploader
 
   @doc """
   Inserts the changeset and store the record files in a database transaction,
   so if the files fail to be stored the record will not be created.
   """
+  @spec create_with_file(Changeset.t, module, Uploader.t, keyword) :: {:ok, any} | {:error, any()}
   def create_with_file(changeset, repo, uploader, opts \\ []) do
     Multi.new()
     |> Multi.run(:insert, fn _repo, _ -> repo.insert(changeset, opts) end)
@@ -23,6 +28,7 @@ defmodule Uploadex.Context do
 
   This function also deletes files that are no longer referenced.
   """
+  @spec update_with_file(Changeset.t, any, module, Uploader.t, keyword) :: {:ok, any} | {:error, any()}
   def update_with_file(changeset, previous_record, repo, uploader, opts \\ []) do
     Multi.new()
     |> Multi.run(:update, fn _repo, _ -> repo.update(changeset, opts) end)
@@ -35,6 +41,7 @@ defmodule Uploadex.Context do
   @doc """
   Similar to `update_with_file/3`, but does not delete previous files.
   """
+  @spec update_with_file_keep_previous(Changeset.t, module, Uploader.t, keyword) :: {:ok, any} | {:error, any()}
   def update_with_file_keep_previous(changeset, repo, uploader, opts \\ []) do
     Multi.new()
     |> Multi.run(:update, fn _repo, _ -> repo.update(changeset, opts) end)
@@ -47,6 +54,7 @@ defmodule Uploadex.Context do
   Deletes the record and all of its files.
   This is not in a database transaction, since the delete operation never returns errors.
   """
+  @spec delete_with_file(Changeset.t, module, Uploader.t, keyword) :: {:ok, any} | {:error, any()}
   def delete_with_file(record, repo, uploader, opts \\ []) do
     case repo.delete(record, opts) do
       {:ok, record} -> uploader.delete_files(record)

@@ -17,7 +17,9 @@ defmodule Uploadex.Resolver do
       end
   """
 
-  @spec get_file_url(any, any) :: (any, any, any -> {:ok, any})
+  alias Uploadex.Uploader
+
+  @spec get_file_url(atom, Uploader.t) :: (any, any, any -> {:ok, any})
   def get_file_url(field, uploader) do
     fn record, _, _ ->
       {status, result} = uploader.get_files_url(record, field)
@@ -25,7 +27,7 @@ defmodule Uploadex.Resolver do
     end
   end
 
-  @spec get_files_url(any, any) :: (any, any, any -> {:ok, [any]})
+  @spec get_files_url(atom, Uploader.t) :: (any, any, any -> {:ok, [any]})
   def get_files_url(field, uploader) do
     fn record, _, _ -> uploader.get_files_url(record, field) end
   end

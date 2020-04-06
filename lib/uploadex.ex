@@ -1,6 +1,6 @@
 defmodule Uploadex do
   @moduledoc """
-  Concept module that would centralize all Uploadex function calls to avoid global configuratiob
+  Imports functions from Files, Context and Resolver modules, passing itself as a parameter for configuration.
   """
 
   defmacro __using__(opts \\ []) do

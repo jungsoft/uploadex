@@ -6,16 +6,18 @@ defmodule Uploadex.Files do
   @type record :: any()
   @type record_field :: atom()
   @type status :: :ok | :error
-  @type uploader :: atom()
 
-  alias Uploadex.Validation
+  alias Uploadex.{
+    Validation,
+    Uploader,
+  }
 
   @doc """
   Stores all files of a record, as defined by the uploader.
 
   Files that are not maps are ignored, which allows for assigning an existing file to a record without recreating it, by simply passing it's filename.
   """
-  @spec store_files(record, uploader) :: {:ok, record} | {:error, any()}
+  @spec store_files(record, Uploader.t) :: {:ok, record} | {:error, any()}
   def store_files(record, uploader) do
     files = wrap_files(record, uploader)
     extensions = get_accepted_extensions(record, uploader)
@@ -45,7 +47,7 @@ defmodule Uploadex.Files do
   @doc """
   Deletes all files that changed.
   """
-  @spec delete_previous_files(record, record, uploader) :: {:ok, record} | {:error, any()}
+  @spec delete_previous_files(record, record, Uploader.t) :: {:ok, record} | {:error, any()}
   def delete_previous_files(new_record, previous_record, uploader) do
     new_files = wrap_files(new_record, uploader)
     old_files = wrap_files(previous_record, uploader)
@@ -58,7 +60,7 @@ defmodule Uploadex.Files do
   @doc """
   Deletes all files for a record.
   """
-  @spec delete_files(record, uploader) :: {:ok, record} | {:error, any()}
+  @spec delete_files(record, Uploader.t) :: {:ok, record} | {:error, any()}
   def delete_files(record, uploader) do
     record
     |> wrap_files(uploader)
@@ -75,19 +77,19 @@ defmodule Uploadex.Files do
     old_files -- new_files
   end
 
-  @spec get_file_url(record, String.t, record_field, uploader) :: {status, String.t | nil}
+  @spec get_file_url(record, String.t, record_field, Uploader.t) :: {status, String.t | nil}
   def get_file_url(record, file, field, uploader) do
     {status, result} = get_files_url(record, file, field, uploader)
 
     {status, List.first(result)}
   end
 
-  @spec get_files_url(record, record_field, uploader) :: {status, [String.t]}
+  @spec get_files_url(record, record_field, Uploader.t) :: {status, [String.t]}
   def get_files_url(record, field, uploader) do
     get_files_url(record, wrap_files(record, uploader, field), field, uploader)
   end
 
-  @spec get_files_url(record, String.t | [String.t], record_field, uploader) :: {status, [String.t]}
+  @spec get_files_url(record, String.t | [String.t], record_field, Uploader.t) :: {status, [String.t]}
   def get_files_url(record, files, field, uploader) do
     files
     |> List.wrap()
@@ -107,19 +109,19 @@ defmodule Uploadex.Files do
     end
   end
 
-  @spec get_temporary_file(record, String.t, String.t, record_field, uploader) :: String.t | nil | {:error, String.t}
+  @spec get_temporary_file(record, String.t, String.t, record_field, Uploader.t) :: String.t | nil | {:error, String.t}
   def get_temporary_file(record, file, path, field, uploader) do
     record
     |> get_temporary_files(file, path, field, uploader)
     |> List.first()
   end
 
-  @spec get_temporary_files(record, String.t, record_field, uploader) :: [String.t]
+  @spec get_temporary_files(record, String.t, record_field, Uploader.t) :: [String.t]
   def get_temporary_files(record, path, field, uploader) do
     get_temporary_files(record, wrap_files(record, uploader), path, field, uploader)
   end
 
-  @spec get_temporary_files(record, String.t | [String.t], String.t, record_field, uploader) :: [String.t]
+  @spec get_temporary_files(record, String.t | [String.t], String.t, record_field, Uploader.t) :: [String.t]
   def get_temporary_files(record, files, path, field, uploader) do
     files
     |> List.wrap()
