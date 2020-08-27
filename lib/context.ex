@@ -65,9 +65,9 @@ defmodule Uploadex.Context do
   Deletes the record and all of its files.
   This is not in a database transaction, since the delete operation never returns errors.
   """
-  @spec delete_with_file(Changeset.t, module, Uploader.t, keyword) :: {:ok, any} | {:error, any()}
-  def delete_with_file(record, repo, uploader, opts \\ []) do
-    case repo.delete(record, opts) do
+  @spec delete_with_file(any, module, Uploader.t, keyword) :: {:ok, any} | {:error, any()}
+  def delete_with_file(record_or_changeset, repo, uploader, opts \\ []) do
+    case repo.delete(record_or_changeset, opts) do
       {:ok, record} -> uploader.delete_files(record)
       {:error, error} -> {:error, error}
     end

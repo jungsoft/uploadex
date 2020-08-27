@@ -109,9 +109,7 @@ The `use Uploadex` line in your Uploader module will import 3 groups of function
     end
 
     def delete_user(%User{} = user) do
-      user
-      |> Ecto.Changeset.change()
-      |> MyUploader.delete_with_file()
+      MyUploader.delete_with_file(user)
     end
   end
   ```
