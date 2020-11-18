@@ -1,7 +1,6 @@
 defmodule Uploadex.Validation do
   @moduledoc false
 
-
   @type file :: map() | String.t
   @type field :: atom()
   @type storage_opts :: any()
