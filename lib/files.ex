@@ -33,12 +33,10 @@ defmodule Uploadex.Files do
     files = wrap_files(record, uploader)
     extensions = get_accepted_extensions(record, uploader)
 
-    case Validation.validate_extensions(files, extensions) do
-      :ok ->
-        files
-        |> Enum.filter(fn {file, _, _} -> is_map(file) end)
-        |> do_store_files(record)
+    changed_files = Enum.filter(files, fn {file, _, _} -> is_map(file) end)
 
+    case Validation.validate_extensions(changed_files, extensions) do
+      :ok -> do_store_files(changed_files, record)
       error -> error
     end
   end
