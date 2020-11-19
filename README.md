@@ -103,17 +103,21 @@ def create_changeset(%User{} = user, attrs) do
 end
 ```
 
-### 4: Configuration to use temporary file functions
+### 4: Configuration
 
-Add in your configuration file.
+Depending on which features you are using, you may need extra configurations:
+
+#### Temporary Files
+
+If you are using `get_temporary_file` or `get_temporary_files`, you need to configure [task_after](https://github.com/OvermindDL1/task_after):
 
 ```elixir
 config :task_after, global_name: TaskAfter
 ```
 
-### 4.1: S3 Bucket Configuration(required for S3 storage only)
+#### S3 Configuration
 
-Add in your configuration file. For more information access [ex_aws_s3 documentation](https://github.com/ex-aws/ex_aws_s3)
+If you are using the S3 adapter, add this to your configuration file. For more information access the [ex_aws_s3 documentation](https://github.com/ex-aws/ex_aws_s3):
 
 ```elixir
 config :ex_aws, :s3,
