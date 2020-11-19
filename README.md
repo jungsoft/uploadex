@@ -108,7 +108,7 @@ The `use Uploadex` line in your Uploader module will import 3 groups of function
 
 #### Context
 
-  The highest level functions are context helpers (see [Context]([Resolver](https://hexdocs.pm/uploadex/Uploadex.Context.html#content)) for more documentation), which will allow you to easily create, update and delete your records with associated files:
+  The highest level functions are context helpers (see [Context](https://hexdocs.pm/uploadex/Uploadex.html#content) for more documentation), which will allow you to easily create, update and delete your records with associated files:
 
   ```elixir
   defmodule MyApp.Accounts do
