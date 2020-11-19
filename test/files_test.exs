@@ -24,10 +24,12 @@ defmodule UploadexTest do
               TestUploader.store_files(user)
     end
 
-    test "should only validate changed files" do
-      user = %User{files: [%{filename: "file.pdf"}, "file2.pdf"]}
-      assert {:error, "Some files in [\"file.pdf\"] violate the accepted extensions: [\".jpg\", \".png\"]"} =
-              TestUploader.store_files(user)
+    test "if previous record is passed, should only validate changed files" do
+      previous_user = %User{files: ["previous_file.png", "unchanged.png"]}
+      updated_user = %User{files: ["new_file.pdf", "unchanged.png"]}
+
+      assert {:error, "Some files in [\"new_file.pdf\"] violate the accepted extensions: [\".jpg\", \".png\"]"} =
+              TestUploader.store_files(updated_user, previous_user)
     end
   end
 

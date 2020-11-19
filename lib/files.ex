@@ -31,12 +31,28 @@ defmodule Uploadex.Files do
   @spec store_files(record, Uploader.t) :: {:ok, record} | {:error, any()}
   def store_files(record, uploader) do
     files = wrap_files(record, uploader)
+    validate_and_store_files(record, files, uploader)
+  end
+
+  @spec store_files(record, Uploader.t, record) :: {:ok, record} | {:error, any()}
+  def store_files(record, uploader, previous_record) do
+    current_files = wrap_files(record, uploader)
+    previous_files = wrap_files(previous_record, uploader)
+
+    changed_files = current_files -- previous_files
+
+    validate_and_store_files(record, changed_files, uploader)
+  end
+
+  defp validate_and_store_files(record, changed_files, uploader) do
     extensions = get_accepted_extensions(record, uploader)
 
-    changed_files = Enum.filter(files, fn {file, _, _} -> is_map(file) end)
-
     case Validation.validate_extensions(changed_files, extensions) do
-      :ok -> do_store_files(changed_files, record)
+      :ok ->
+        changed_files
+        |> Enum.filter(fn {file, _, _} -> is_map(file) end)
+        |> do_store_files(record)
+
       error -> error
     end
   end

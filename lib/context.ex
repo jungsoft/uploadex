@@ -43,7 +43,7 @@ defmodule Uploadex.Context do
   def update_with_file(changeset, previous_record, repo, uploader, opts \\ []) do
     Multi.new()
     |> Multi.run(:update, fn _repo, _ -> repo.update(changeset, opts) end)
-    |> Multi.run(:store_files, fn _repo, %{update: record} -> uploader.store_files(record) end)
+    |> Multi.run(:store_files, fn _repo, %{update: record} -> uploader.store_files(record, previous_record) end)
     |> Multi.run(:delete_file, fn _repo, %{update: record} -> uploader.delete_previous_files(record, previous_record) end)
     |> repo.transaction()
     |> convert_result()
