@@ -7,7 +7,7 @@ Documentation can be found at https://hexdocs.pm/uploadex.
 ## Migrating from v2 to v3
 
 1. In you uploader, change `@behaviour Uploadex.Uploader` to `use Uploadex`
-1. Remove all `config :uploadex` from your configuration fiels
+1. Remove all `config :uploadex` from your configuration files
 1. Change all direct functions calls from `Uploadex.Resolver`, `Uploadex.Files` and `Uploadex` to your Uploader module
 
 ## Installation
@@ -17,7 +17,11 @@ The package can be installed by adding `uploadex` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:uploadex, "~> 3.0.0-rc.1"}
+    {:uploadex, "~> 3.0.0-rc.1"},
+    # S3 dependencies(required for S3 storage only)
+    {:ex_aws, "~> 2.1"},
+    {:ex_aws_s3, "~> 2.0.2"},
+    {:sweet_xml, "~> 0.6"},
   ]
 end
 ```
@@ -81,7 +85,22 @@ def create_changeset(%User{} = user, attrs) do
 end
 ```
 
-### 3: Enjoy!
+### 3: S3 Bucket Configuration(required for S3 storage only)
+```elixir
+config :ex_aws, :s3,
+  access_key_id: "key",
+  secret_access_key: "secret",
+  region: "us-east-1",
+  host: "localhost",
+  port: "9000",
+  scheme: "http://"
+
+config :my_project, :uploads,
+  bucket: "uploads",
+  region: "us-east-1"
+```
+
+### 4: Enjoy!
 
 Now, you can use your defined Uploader to handle your records with their files!
 
