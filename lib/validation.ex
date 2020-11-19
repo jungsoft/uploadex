@@ -2,8 +2,11 @@ defmodule Uploadex.Validation do
   @moduledoc false
 
   @type file :: map() | String.t
+  @type field :: atom()
+  @type storage_opts :: any()
+  @type wrapped_file :: {file(), field(), storage_opts()}
 
-  @spec validate_extensions([file], [String.t] | any) :: :ok | {:error, any()}
+  @spec validate_extensions([wrapped_file], [String.t] | any) :: :ok | {:error, any()}
   def validate_extensions(_files, :any), do: :ok
 
   def validate_extensions(files, accepted_extensions) do
@@ -40,10 +43,10 @@ defmodule Uploadex.Validation do
     Enum.member?(accepted_extensions, extension)
   end
 
-  def get_file_names(files) do
+  defp get_file_names(files) do
     Enum.map(files, fn
       {%{filename: filename}, _field, _storage} -> filename
-      filename -> filename
+      {filename, _field, _storage} -> filename
     end)
   end
 end

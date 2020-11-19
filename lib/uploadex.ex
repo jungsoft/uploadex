@@ -17,6 +17,7 @@ defmodule Uploadex do
 
       ## Files
       def store_files(record), do: Files.store_files(record, __MODULE__)
+      def store_files(record, previous_record), do: Files.store_files(record, previous_record, __MODULE__)
       def delete_previous_files(new_record, previous_record), do: Files.delete_previous_files(new_record, previous_record, __MODULE__)
       def delete_files(record), do: Files.delete_files(record, __MODULE__)
 

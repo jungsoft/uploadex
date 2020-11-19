@@ -20,7 +20,16 @@ defmodule UploadexTest do
 
     test "fails when extension is not accepted" do
       user = %User{files: [%{filename: "file.pdf"}]}
-      assert {:error, "Some files in [\"file.pdf\"] violate the accepted extensions: [\".jpg\", \".png\"]"} = TestUploader.store_files(user)
+      assert {:error, "Some files in [\"file.pdf\"] violate the accepted extensions: [\".jpg\", \".png\"]"} =
+              TestUploader.store_files(user)
+    end
+
+    test "if previous record is passed, should only validate changed files" do
+      previous_user = %User{files: ["previous_file.png", "unchanged.png"]}
+      updated_user = %User{files: ["new_file.pdf", "unchanged.png"]}
+
+      assert {:error, "Some files in [\"new_file.pdf\"] violate the accepted extensions: [\".jpg\", \".png\"]"} =
+              TestUploader.store_files(updated_user, previous_user)
     end
   end
 
@@ -54,7 +63,7 @@ defmodule UploadexTest do
   describe "get_files_url" do
     test "returns all files in a list" do
       user = %User{}
-      assert {:ok, Enum.map(user.files, & &1.filename)} == TestUploader.get_files_url(user, :files) |> IO.inspect()
+      assert {:ok, Enum.map(user.files, & &1.filename)} == TestUploader.get_files_url(user, :files)
     end
 
     test "returns the selected files in a list" do
