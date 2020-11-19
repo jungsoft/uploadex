@@ -86,7 +86,18 @@ def create_changeset(%User{} = user, attrs) do
 end
 ```
 
-### 3: S3 Bucket Configuration(required for S3 storage only)
+### 3: Configuration
+
+Add in your configuration file.
+
+```elixir
+config :task_after, global_name: TaskAfter
+```
+
+### 4: S3 Bucket Configuration(required for S3 storage only)
+
+Add in your configuration file.
+
 ```elixir
 config :ex_aws, :s3,
   access_key_id: "key",
@@ -101,7 +112,7 @@ config :my_project, :uploads,
   region: "us-east-1"
 ```
 
-### 4: Enjoy!
+### 5: Enjoy!
 
 Now, you can use your defined Uploader to handle your records with their files!
 
