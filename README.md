@@ -75,7 +75,7 @@ A string field is required in the database to save the file reference.
 The example below shows what would be needed to have a field to upload.
 
 ```elixir
-  defmodule MyRepo.Migrations.AddPhotoToUsers do
+defmodule MyApp.Repo.Migrations.AddPhotoToUsers do
   use Ecto.Migration
 
   def change do
@@ -103,7 +103,7 @@ def create_changeset(%User{} = user, attrs) do
 end
 ```
 
-### 4: Configuration
+### 4: Configuration to use temporary file functions
 
 Add in your configuration file.
 
@@ -113,7 +113,7 @@ config :task_after, global_name: TaskAfter
 
 ### 4.1: S3 Bucket Configuration(required for S3 storage only)
 
-Add in your configuration file.
+Add in your configuration file. For more information access [ex_aws_s3 documentation](https://github.com/ex-aws/ex_aws_s3)
 
 ```elixir
 config :ex_aws, :s3,
@@ -137,7 +137,7 @@ The `use Uploadex` line in your Uploader module will import 3 groups of function
 
 #### Context
 
-  The highest level functions are context helpers (see [Context](https://hexdocs.pm/uploadex/Uploadex.html#content) for more documentation), which will allow you to easily create, update and delete your records with associated files:
+  The highest level functions are context helpers (see [Context](https://hexdocs.pm/uploadex/3.0.0-rc.1/Uploadex.Context.html) for more documentation), which will allow you to easily create, update and delete your records with associated files:
 
   ```elixir
   defmodule MyApp.Accounts do
