@@ -7,7 +7,7 @@ Documentation can be found at https://hexdocs.pm/uploadex.
 ## Migrating from v2 to v3
 
 1. In you uploader, change `@behaviour Uploadex.Uploader` to `use Uploadex`
-1. Remove all `config :uploadex` from your configuration fiels
+1. Remove all `config :uploadex` from your configuration files
 1. Change all direct functions calls from `Uploadex.Resolver`, `Uploadex.Files` and `Uploadex` to your Uploader module
 
 ## Installation
@@ -17,7 +17,11 @@ The package can be installed by adding `uploadex` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:uploadex, "~> 3.0.0-rc.1"}
+    {:uploadex, "~> 3.0.0-rc.1"},
+    # S3 dependencies(required for S3 storage only)
+    {:ex_aws, "~> 2.1"},
+    {:ex_aws_s3, "~> 2.0.2"},
+    {:sweet_xml, "~> 0.6"},
   ]
 end
 ```
@@ -43,7 +47,7 @@ defmodule MyApp.Uploader do
 
   @impl true
   def get_fields(%User{}), do: :photo
-  def get_fields(%Company{}), do: [:photo]
+  def get_fields(%Company{}), do: [:photo, :logo]
 
   @impl true
   def default_opts(Uploadex.FileStorage), do: [base_path: Path.join(:code.priv_dir(:my_app), "static/"), base_url: Endpoint.url()]
@@ -51,7 +55,8 @@ defmodule MyApp.Uploader do
 
   @impl true
   def storage(%User{id: id}, :photo), do: {Uploadex.FileStorage, directory: "/uploads/users/#{id}"}
-  def storage(%Company{}, _field), do: {Uploadex.S3Storage, directory: "/thumbnails"}
+  def storage(%Company{id: id}, :photo), do: {Uploadex.S3Storage, directory: "/thumbnails/#{id}"}
+  def storage(%Company{}, :logo), do: {Uploadex.S3Storage, directory: "/logos"}
 
   # Optional:
   @impl true
@@ -64,7 +69,24 @@ This example shows the configuration for the [Uploadex.FileStorage](https://hexd
 
 *Note: To avoid too much metaprogramming magic, the `use` in this module is very simple and, in fact, optional. If you wish to do so, you can just define the `@behaviour Uploadex.Uploader` instead of the `use` and then call all lower level modules directly, passing your Uploader module as argument. The `use` makes life much easier, though!*
 
-### 2: Schema
+### 2: Ecto Migration
+
+A string field is required in the database to save the file reference.
+The example below shows what would be needed to have a field to upload.
+
+```elixir
+defmodule MyApp.Repo.Migrations.AddPhotoToUsers do
+  use Ecto.Migration
+
+  def change do
+    alter table(:users) do
+      add :photo, :string
+    end
+  end
+end
+```
+
+### 3: Schema
 
 In your schema, use the Ecto Type [Uploadex.Upload](https://hexdocs.pm/uploadex/Uploadex.Upload.html#content):
 
@@ -81,7 +103,37 @@ def create_changeset(%User{} = user, attrs) do
 end
 ```
 
-### 3: Enjoy!
+### 4: Configuration
+
+Depending on which features you are using, you may need extra configurations:
+
+#### Temporary Files
+
+If you are using `get_temporary_file` or `get_temporary_files`, you need to configure [task_after](https://github.com/OvermindDL1/task_after):
+
+```elixir
+config :task_after, global_name: TaskAfter
+```
+
+#### S3 Configuration
+
+If you are using the S3 adapter, add this to your configuration file. For more information access the [ex_aws_s3 documentation](https://github.com/ex-aws/ex_aws_s3):
+
+```elixir
+config :ex_aws, :s3,
+  access_key_id: "key",
+  secret_access_key: "secret",
+  region: "us-east-1",
+  host: "localhost",
+  port: "9000",
+  scheme: "http://"
+
+config :my_project, :uploads,
+  bucket: "uploads",
+  region: "us-east-1"
+```
+
+### 5: Enjoy!
 
 Now, you can use your defined Uploader to handle your records with their files!
 
@@ -89,7 +141,7 @@ The `use Uploadex` line in your Uploader module will import 3 groups of function
 
 #### Context
 
-  The highest level functions are context helpers (see [Context]([Resolver](https://hexdocs.pm/uploadex/Uploadex.Context.html#content)) for more documentation), which will allow you to easily create, update and delete your records with associated files:
+  The highest level functions are context helpers (see [Context](https://hexdocs.pm/uploadex/3.0.0-rc.1/Uploadex.Context.html) for more documentation), which will allow you to easily create, update and delete your records with associated files:
 
   ```elixir
   defmodule MyApp.Accounts do
