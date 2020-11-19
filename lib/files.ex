@@ -34,8 +34,8 @@ defmodule Uploadex.Files do
     validate_and_store_files(record, files, uploader)
   end
 
-  @spec store_files(record, Uploader.t, record) :: {:ok, record} | {:error, any()}
-  def store_files(record, uploader, previous_record) do
+  @spec store_files(record, record, Uploader.t) :: {:ok, record} | {:error, any()}
+  def store_files(record, previous_record, uploader) do
     current_files = wrap_files(record, uploader)
     previous_files = wrap_files(previous_record, uploader)
 
