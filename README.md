@@ -47,7 +47,7 @@ defmodule MyApp.Uploader do
 
   @impl true
   def get_fields(%User{}), do: :photo
-  def get_fields(%Company{}), do: [:photo]
+  def get_fields(%Company{}), do: [:photo, :logo]
 
   @impl true
   def default_opts(Uploadex.FileStorage), do: [base_path: Path.join(:code.priv_dir(:my_app), "static/"), base_url: Endpoint.url()]
@@ -55,7 +55,8 @@ defmodule MyApp.Uploader do
 
   @impl true
   def storage(%User{id: id}, :photo), do: {Uploadex.FileStorage, directory: "/uploads/users/#{id}"}
-  def storage(%Company{}, _field), do: {Uploadex.S3Storage, directory: "/thumbnails"}
+  def storage(%Company{id: id}, :photo), do: {Uploadex.S3Storage, directory: "/thumbnails/#{id}"}
+  def storage(%Company{}, :logo), do: {Uploadex.S3Storage, directory: "/logos"}
 
   # Optional:
   @impl true
