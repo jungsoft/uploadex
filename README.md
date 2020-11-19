@@ -69,7 +69,24 @@ This example shows the configuration for the [Uploadex.FileStorage](https://hexd
 
 *Note: To avoid too much metaprogramming magic, the `use` in this module is very simple and, in fact, optional. If you wish to do so, you can just define the `@behaviour Uploadex.Uploader` instead of the `use` and then call all lower level modules directly, passing your Uploader module as argument. The `use` makes life much easier, though!*
 
-### 2: Schema
+### 2: Ecto Migration
+
+A string field is required in the database to save the file reference.
+The example below shows what would be needed to have a field to upload.
+
+```elixir
+  defmodule MyRepo.Migrations.AddPhotoToUsers do
+  use Ecto.Migration
+
+  def change do
+    alter table(:users) do
+      add :photo, :string
+    end
+  end
+end
+```
+
+### 3: Schema
 
 In your schema, use the Ecto Type [Uploadex.Upload](https://hexdocs.pm/uploadex/Uploadex.Upload.html#content):
 
@@ -86,7 +103,7 @@ def create_changeset(%User{} = user, attrs) do
 end
 ```
 
-### 3: Configuration
+### 4: Configuration
 
 Add in your configuration file.
 
@@ -94,7 +111,7 @@ Add in your configuration file.
 config :task_after, global_name: TaskAfter
 ```
 
-### 4: S3 Bucket Configuration(required for S3 storage only)
+### 4.1: S3 Bucket Configuration(required for S3 storage only)
 
 Add in your configuration file.
 
