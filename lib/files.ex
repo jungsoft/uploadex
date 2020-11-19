@@ -39,9 +39,9 @@ defmodule Uploadex.Files do
     current_files = wrap_files(record, uploader)
     previous_files = wrap_files(previous_record, uploader)
 
-    changed_files = current_files -- previous_files
+    new_changed_files = get_new_files(current_files, previous_files)
 
-    validate_and_store_files(record, changed_files, uploader)
+    validate_and_store_files(record, new_changed_files, uploader)
   end
 
   defp validate_and_store_files(record, changed_files, uploader) do
@@ -78,7 +78,7 @@ defmodule Uploadex.Files do
     old_files = wrap_files(previous_record, uploader)
 
     new_files
-    |> get_changed_files(old_files)
+    |> get_discarded_files(old_files)
     |> do_delete_files(new_record)
   end
 
@@ -98,9 +98,10 @@ defmodule Uploadex.Files do
   end
 
   # Returns all old files that are not in new files.
-  defp get_changed_files(new_files, old_files) do
-    old_files -- new_files
-  end
+  defp get_discarded_files(new_files, old_files), do: old_files -- new_files
+
+  # Returns all new files that are not in old files.
+  defp get_new_files(new_files, old_files), do: new_files -- old_files
 
   @spec get_file_url(record, String.t, record_field, Uploader.t) :: {status, String.t | nil}
   def get_file_url(record, file, field, uploader) do
