@@ -73,7 +73,7 @@ defmodule Uploadex.TestingTest do
     test "asserts that no file was stored" do
       store_files([])
       refute_stored_files()
-      assert 0 == Enum.count(TestStorage.get_stored())
+      assert [] == TestStorage.get_stored()
     end
 
     test "prints a helpful message when assertion fails" do
@@ -99,7 +99,7 @@ defmodule Uploadex.TestingTest do
     test "asserts that no file was deleted" do
       delete_files([])
       refute_deleted_files()
-      assert 0 == Enum.count(TestStorage.get_deleted())
+      assert [] == TestStorage.get_deleted()
     end
 
     test "prints a helpful message when assertion fails" do
