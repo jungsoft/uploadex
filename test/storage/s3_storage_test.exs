@@ -1,5 +1,5 @@
 defmodule S3StorageTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   alias Uploadex.S3Storage
 

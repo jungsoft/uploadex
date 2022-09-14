@@ -1,5 +1,5 @@
 defmodule UploadTypeTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Uploadex.Upload
 
   @path "my/path/example.jpg"
