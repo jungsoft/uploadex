@@ -195,6 +195,10 @@ Some examples:
 {:ok, files} = MyUploader.get_files_url(user, :photos)
 ```
 
+## Testing
+
+For knowing how to test with Uploadex, check the hexdocs of the [Testing](https://hexdocs.pm/uploadex/3.0.0-rc.1/Uploadex.Testing.html#content) module.
+
 ## Motivation
 
 Even though there already exists a library for uploading files that integrates with ecto (https://github.com/stavro/arc_ecto), this library was created because:

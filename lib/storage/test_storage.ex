@@ -52,6 +52,7 @@ defmodule Uploadex.TestStorage do
         assert [] == Uploadex.TestStorage.get_opts()
       end
 
+  This module is just the base for testing, check `Uploadex.Testing` for a more convenient way to test uploads.
   """
 
   use Agent
