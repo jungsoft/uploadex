@@ -1,21 +1,16 @@
 defmodule UploadexTest do
   use ExUnit.Case, async: true
+  use Uploadex.Testing
+
   doctest Uploadex
 
-  alias Uploadex.{
-    TestStorage,
-  }
-
-  setup do
-    TestStorage.start_link()
-    :ok
-  end
+  alias Uploadex.TestStorage
 
   describe "store_files/1" do
     test "stores all files from the record" do
       user = %User{}
       assert {:ok, %{}} = TestUploader.store_files(user)
-      assert user.files == TestStorage.get_stored()
+      assert assert_stored_files(user.files)
     end
 
     test "fails when extension is not accepted" do
@@ -37,19 +32,19 @@ defmodule UploadexTest do
     test "delete all files from the record" do
       user = %User{}
       assert {:ok, %{}} = TestUploader.delete_files(user)
-      assert user.files == TestStorage.get_deleted()
+      assert assert_deleted_files(user.files)
     end
   end
 
   describe "delete_previous_files/1" do
     test "with no changed files" do
       assert {:ok, %{}} = TestUploader.delete_previous_files(%User{}, %User{})
-      assert [] == TestStorage.get_deleted()
+      assert refute_deleted_files()
     end
 
     test "with changed files" do
       assert {:ok, %{}} = TestUploader.delete_previous_files(%User{files: [%{filename: "2.jpg"}, "3.jpg"]}, %User{})
-      assert [%{filename: "1.jpg"}] == TestStorage.get_deleted()
+      assert assert_deleted_files([%{filename: "1.jpg"}])
     end
   end
 
