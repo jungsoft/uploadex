@@ -51,7 +51,7 @@ defmodule Uploadex.MixProject do
       {:hackney, ">= 1.9.0", optional: true},
       {:sweet_xml, "~> 0.6", optional: true},
       # Runtime checks and doc
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
       {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
       {:dialyxir, github: "gabrielpra1/dialyxir", only: [:dev, :test], runtime: false},
       # Temporary files
