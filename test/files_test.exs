@@ -72,14 +72,18 @@ defmodule UploadexTest do
     end
   end
 
-  describe "Storage opts" do
+  describe "storage opts" do
     test "is passed to the storage considering default opts" do
       user = %User{files: [%{filename: "file.png"}]}
       default_opts = TestUploader.default_opts(TestStorage)
       {TestStorage, custom_opts} = TestUploader.storage(user, :files)
 
       {:ok, _} = TestUploader.store_files(user)
-      assert Keyword.merge(default_opts, custom_opts) == TestStorage.get_opts()
+
+      # `agent_name` is added automatically to opts by `Uploadex.TestStorage`, so dont need to be considered here
+      opts = Keyword.delete(TestStorage.get_opts(), :agent_name)
+
+      assert Keyword.merge(default_opts, custom_opts) == opts
     end
   end
 end
