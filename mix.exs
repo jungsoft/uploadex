@@ -8,11 +8,12 @@ defmodule Uploadex.MixProject do
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      elixirc_paths: elixirc_paths(Mix.env()),
       name: "Uploadex",
       source_url: "https://github.com/gabrielpra1/uploadex",
       description: "Elixir library for handling uploads using Ecto and Arc",
       package: package(),
-      elixirc_paths: elixirc_paths(Mix.env()),
+      docs: docs(),
       dialyzer: [
         plt_add_apps: [:ex_unit, :mix, :ex_aws, :ex_aws_s3],
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
@@ -37,6 +38,13 @@ defmodule Uploadex.MixProject do
         "GitHub" => "https://github.com/gabrielpra1/uploadex",
         "Docs" => "https://hexdocs.pm/uploadex/"
       }
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"]
     ]
   end
 
