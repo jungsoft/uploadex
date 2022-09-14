@@ -53,7 +53,7 @@ defmodule Uploadex.Testing do
     quote do
       import Uploadex.Testing
 
-      setup :start_test_storage_test
+      setup :start_test_storage
     end
   end
 
@@ -65,8 +65,8 @@ defmodule Uploadex.Testing do
       setup :start_test_storage
 
   """
-  @spec start_test_storage_test(context :: map()) :: :ok
-  def start_test_storage_test(_ctx \\ %{}) do
+  @spec start_test_storage(context :: map()) :: :ok
+  def start_test_storage(_ctx \\ %{}) do
     TestStorage.start_link()
     :ok
   end
