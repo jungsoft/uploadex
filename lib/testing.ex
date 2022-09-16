@@ -25,17 +25,23 @@ defmodule Uploadex.Testing do
   # Asserting that no file was stored
   refute_stored_files()
 
+  # Getting all stored files
+  ["file1.pdf", "file2.pdf"] == get_stored_files()
+
   # Asserting that 1 files was deleted
   assert_deleted_files_count(1)
 
   # Asserting the filenames of the deleted files
-  assert_deleted(["file3.pdf"])
+  assert_deleted(["file3.pdf", "file4.pdf", "file5.pdf"])
 
   # Asserting the filenames of the deleted files ignoring the order
-  assert_deleted_files(["file2.pdf", "file1.pdf"], ignore_order: true)
+  assert_deleted_files(["file4.pdf", "file5.pdf", "file3.pdf"], ignore_order: true)
 
   # Asserting that no file was deleted
   refute_deleted_files()
+
+  # Getting all deleted files
+  ["file3.pdf", "file4.pdf", "file5.pdf"] == get_deleted_files()
   ```
 
   If you need a more low level API, you can directly use the `Uploadex.TestStorage` functions.
@@ -189,4 +195,28 @@ defmodule Uploadex.Testing do
       assert expected_files == deleted_files, error_message
     end
   end
+
+  @doc """
+  Returns all the stored files.
+
+  It's the same as calling `Uploadex.TestStorage.get_stored/0`.
+  """
+  @spec get_stored_files :: list()
+  defdelegate get_stored_files, to: TestStorage, as: :get_stored
+
+  @doc """
+  Returns all the deleted files.
+
+  It's the same as calling `Uploadex.TestStorage.get_deleted/0`.
+  """
+  @spec get_deleted_files :: list()
+  defdelegate get_deleted_files, to: TestStorage, as: :get_deleted
+
+  @doc """
+  Returns the options used in the `Uploadex.TestStorage`.
+
+  It's the same as calling `Uploadex.TestStorage.get_opts/0`.
+  """
+  @spec get_storage_opts :: keyword()
+  defdelegate get_storage_opts, to: TestStorage, as: :get_opts
 end
