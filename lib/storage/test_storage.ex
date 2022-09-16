@@ -90,11 +90,11 @@ defmodule Uploadex.TestStorage do
   def store(file, opts) do
     opts
     |> get_agent_name()
-    |> Agent.update(fn state -> Map.update!(state, :stored, &(&1 ++ [file])) end)
-
-    opts
-    |> get_agent_name()
-    |> Agent.update(fn state -> Map.update!(state, :opts, &Keyword.merge(&1, opts)) end)
+    |> Agent.update(fn state ->
+      state
+      |> Map.update!(:stored, &(&1 ++ [file]))
+      |> Map.update!(:opts, &Keyword.merge(&1, opts))
+    end)
 
     :ok
   end
@@ -103,11 +103,11 @@ defmodule Uploadex.TestStorage do
   def delete(file, opts) do
     opts
     |> get_agent_name()
-    |> Agent.update(fn state -> Map.update!(state, :deleted, &(&1 ++ [file])) end)
-
-    opts
-    |> get_agent_name()
-    |> Agent.update(fn state -> Map.update!(state, :opts, &Keyword.merge(&1, opts)) end)
+    |> Agent.update(fn state ->
+      state
+      |> Map.update!(:deleted, &(&1 ++ [file]))
+      |> Map.update!(:opts, &Keyword.merge(&1, opts))
+    end)
 
     :ok
   end
