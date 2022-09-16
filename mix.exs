@@ -8,11 +8,12 @@ defmodule Uploadex.MixProject do
       elixir: "~> 1.8",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      name: "Uploadex",
-      source_url: "https://github.com/gabrielpra1/uploadex",
-      description: "Elixir library for handling uploads using Ecto and Arc",
-      package: package(),
       elixirc_paths: elixirc_paths(Mix.env()),
+      name: "Uploadex",
+      description: "Elixir library for handling uploads with Ecto, Phoenix and Absinthe",
+      source_url: "https://github.com/jungsoft/uploadex",
+      package: package(),
+      docs: docs(),
       dialyzer: [
         plt_add_apps: [:ex_unit, :mix, :ex_aws, :ex_aws_s3],
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
@@ -40,6 +41,13 @@ defmodule Uploadex.MixProject do
     ]
   end
 
+  defp docs do
+    [
+      main: "readme",
+      extras: ["README.md"]
+    ]
+  end
+
   defp deps do
     [
       # Ecto
@@ -51,9 +59,9 @@ defmodule Uploadex.MixProject do
       {:hackney, ">= 1.9.0", optional: true},
       {:sweet_xml, "~> 0.6", optional: true},
       # Runtime checks and doc
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
-      {:credo, "~> 1.1.0", only: [:dev, :test], runtime: false},
-      {:dialyxir, github: "gabrielpra1/dialyxir", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.2", only: [:dev, :test], runtime: false},
       # Temporary files
       {:task_after, "~> 1.0.0"},
     ]
