@@ -69,47 +69,37 @@ defmodule Uploadex.TestStorage do
   end
 
   def get_stored(opts \\ []) do
-    opts
-    |> get_agent_name()
-    |> Agent.get(& &1.stored)
+    agent_get(:stored, opts)
   end
 
   def get_deleted(opts \\ []) do
-    opts
-    |> get_agent_name()
-    |> Agent.get(& &1.deleted)
+    agent_get(:deleted, opts)
   end
 
   def get_opts(opts \\ []) do
-    opts
-    |> get_agent_name()
-    |> Agent.get(& &1.opts)
+    agent_get(:opts, opts)
   end
 
   @impl true
   def store(file, opts) do
-    opts
-    |> get_agent_name()
-    |> Agent.update(fn state ->
+    update_fun = fn state ->
       state
       |> Map.update!(:stored, &(&1 ++ [file]))
       |> Map.update!(:opts, &Keyword.merge(&1, opts))
-    end)
+    end
 
-    :ok
+    agent_update(update_fun, opts)
   end
 
   @impl true
   def delete(file, opts) do
-    opts
-    |> get_agent_name()
-    |> Agent.update(fn state ->
+    update_fun = fn state ->
       state
       |> Map.update!(:deleted, &(&1 ++ [file]))
       |> Map.update!(:opts, &Keyword.merge(&1, opts))
-    end)
+    end
 
-    :ok
+    agent_update(update_fun, opts)
   end
 
   @impl true
@@ -119,6 +109,18 @@ defmodule Uploadex.TestStorage do
   @impl true
   def get_temporary_file(%{filename: filename}, _path, _opts), do: filename
   def get_temporary_file(filename, _path, _opts) when is_binary(filename), do: filename
+
+  defp agent_get(state_field, opts) when is_atom(state_field) do
+    opts
+    |> get_agent_name()
+    |> Agent.get(fn state -> Map.fetch!(state, state_field) end)
+  end
+
+  defp agent_update(update_fun, opts) when is_function(update_fun) do
+    opts
+    |> get_agent_name()
+    |> Agent.update(update_fun)
+  end
 
   defp get_agent_name(opts) do
     current_pid_as_atom = self() |> inspect() |> String.to_atom()
