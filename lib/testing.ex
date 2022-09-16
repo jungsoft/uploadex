@@ -204,7 +204,6 @@ defmodule Uploadex.Testing do
   @spec get_stored_files :: list()
   defdelegate get_stored_files, to: TestStorage, as: :get_stored
 
-
   @doc """
   Returns all the deleted files.
 
@@ -212,4 +211,12 @@ defmodule Uploadex.Testing do
   """
   @spec get_deleted_files :: list()
   defdelegate get_deleted_files, to: TestStorage, as: :get_deleted
+
+  @doc """
+  Returns the options used in the `Uploadex.TestStorage`.
+
+  It's the same as calling `Uploadex.TestStorage.get_opts/0`.
+  """
+  @spec get_storage_opts :: keyword()
+  defdelegate get_storage_opts, to: TestStorage, as: :get_opts
 end
