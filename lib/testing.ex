@@ -60,7 +60,9 @@ defmodule Uploadex.Testing do
   @doc """
   Starts the `Uploadex.TestStorage`.
 
-  You can use it as a `ExUnit` setup callback:
+  After importing it, you can use as a `ExUnit` setup callback:
+
+      import Uploadex.Testing
 
       setup :start_test_storage
 
@@ -114,15 +116,7 @@ defmodule Uploadex.Testing do
   """
   @spec refute_stored_files() :: true
   def refute_stored_files() do
-    stored_files = TestStorage.get_stored()
-
-    error_message = """
-    Expected no files stored.
-
-    Got: #{inspect(stored_files)}
-    """
-
-    assert [] == stored_files, error_message
+    assert_stored_files_count(0)
   end
 
   @doc """
@@ -130,15 +124,7 @@ defmodule Uploadex.Testing do
   """
   @spec refute_deleted_files() :: true
   def refute_deleted_files() do
-    deleted_files = TestStorage.get_deleted()
-
-    error_message = """
-    Expected no files deleted.
-
-    Got: #{inspect(deleted_files)}
-    """
-
-    assert [] == deleted_files, error_message
+    assert_deleted_files_count(0)
   end
 
   @doc """

@@ -85,9 +85,11 @@ defmodule Uploadex.TestingTest do
       rescue
         error in [ExUnit.AssertionError] ->
           expected = """
-          Expected no files stored.
+          Expected 0 files stored.
 
-          Got: [%{filename: "file1.jpg"}]
+          Got 1 instead:
+
+          [%{filename: "file1.jpg"}]
           """
 
           assert error.message == expected
@@ -111,9 +113,11 @@ defmodule Uploadex.TestingTest do
       rescue
         error in [ExUnit.AssertionError] ->
           expected = """
-          Expected no files deleted.
+          Expected 0 files deleted.
 
-          Got: [%{filename: "file1.jpg"}]
+          Got 1 instead:
+
+          [%{filename: "file1.jpg"}]
           """
 
           assert error.message == expected
