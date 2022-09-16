@@ -10,7 +10,7 @@ defmodule Uploadex.MixProject do
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       name: "Uploadex",
-      description: "Elixir library for handling uploads using Ecto",
+      description: "Elixir library for handling uploads with Ecto, Phoenix and Absinthe",
       source_url: "https://github.com/jungsoft/uploadex",
       package: package(),
       docs: docs(),
