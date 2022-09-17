@@ -17,7 +17,7 @@ The package can be installed by adding `uploadex` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:uploadex, "~> 3.0.0-rc.1"},
+    {:uploadex, "~> 3.0.0"},
     # S3 dependencies(required for S3 storage only)
     {:ex_aws, "~> 2.1"},
     {:ex_aws_s3, "~> 2.0.2"},
@@ -141,7 +141,7 @@ The `use Uploadex` line in your Uploader module will import 3 groups of function
 
 #### Context
 
-  The highest level functions are context helpers (see [Context](https://hexdocs.pm/uploadex/3.0.0-rc.1/Uploadex.Context.html) for more documentation), which will allow you to easily create, update and delete your records with associated files:
+  The highest level functions are context helpers (see [Context](https://hexdocs.pm/uploadex/Uploadex.Context.html) for more documentation), which will allow you to easily create, update and delete your records with associated files:
 
   ```elixir
   defmodule MyApp.Accounts do
@@ -197,7 +197,7 @@ Some examples:
 
 ## Testing
 
-For knowing how to test with Uploadex, check the hexdocs of the [Testing](https://hexdocs.pm/uploadex/3.0.0-rc.1/Uploadex.Testing.html#content) module.
+For knowing how to test with Uploadex, check the hexdocs of the [Testing](https://hexdocs.pm/uploadex/Uploadex.Testing.html#content) module.
 
 ## Motivation
 
