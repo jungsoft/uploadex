@@ -35,7 +35,7 @@ defmodule Uploadex.MixProject do
       files: ~w(lib mix.exs README* LICENSE*),
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/gabrielpra1/uploadex",
+        "GitHub" => "https://github.com/jungsoft/uploadex",
         "Docs" => "https://hexdocs.pm/uploadex/"
       }
     ]
@@ -59,9 +59,9 @@ defmodule Uploadex.MixProject do
       {:hackney, ">= 1.9.0", optional: true},
       {:sweet_xml, "~> 0.6", optional: true},
       # Runtime checks and doc
-      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.2", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.30", only: :dev, runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       # Temporary files
       {:task_after, "~> 1.0.0"},
     ]
