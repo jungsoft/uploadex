@@ -55,7 +55,7 @@ defmodule Uploadex.FileStorage do
   @impl true
   def get_temporary_file(%{filename: filename}, path, opts), do: get_temporary_file(filename, path, opts)
   def get_temporary_file(filename, path, opts) when is_binary(filename) do
-    delay = Keyword.get(opts, :delete_after, 30_000)
+    delay = Keyword.get(opts, :delete_after, :timer.seconds(30))
     full_path = get_file_full_path(opts, filename)
 
     destination_file = Ecto.UUID.generate() <> Path.extname(filename)
@@ -63,11 +63,15 @@ defmodule Uploadex.FileStorage do
 
     File.cp!(full_path, destination_path)
     delete_file_after_delay(delay, destination_path)
+
+    destination_path
   end
 
-  def delete_file_after_delay(delay, path) do
-    TaskAfter.task_after(delay, fn -> File.rm(path) end)
-    path
+  defp delete_file_after_delay(delay, path) do
+    Task.start(fn ->
+      Process.sleep(delay)
+      File.rm(path)
+    end)
   end
 
   defp get_file_full_path(opts, filename) do

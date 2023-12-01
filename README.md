@@ -105,14 +105,6 @@ end
 
 Depending on which features you are using, you may need extra configurations:
 
-#### Temporary Files
-
-If you are using `get_temporary_file` or `get_temporary_files`, you need to configure [task_after](https://github.com/OvermindDL1/task_after):
-
-```elixir
-config :task_after, global_name: TaskAfter
-```
-
 #### S3 Configuration
 
 If you are using the S3 adapter, add this to your configuration file. For more information access the [ex_aws_s3 documentation](https://github.com/ex-aws/ex_aws_s3):
