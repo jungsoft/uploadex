@@ -68,10 +68,7 @@ defmodule Uploadex.FileStorage do
   end
 
   defp delete_file_after_delay(delay, path) do
-    Task.start(fn ->
-      Process.sleep(delay)
-      File.rm(path)
-    end)
+    :timer.apply_after(delay, File, :rm, [path])
   end
 
   defp get_file_full_path(opts, filename) do
