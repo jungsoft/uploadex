@@ -53,7 +53,7 @@ defmodule Uploadex.MixProject do
       # Ecto
       {:ecto, ">= 3.1.7"},
       # For AWS
-      {:ex_aws, "~> 2.0", optional: true},
+      {:ex_aws, "~> 2.0 and >= 2.1.6", optional: true},
       {:ex_aws_s3, "~> 2.0", optional: true},
       {:poison, ">= 3.0.0", optional: true},
       {:hackney, ">= 1.9.0", optional: true},
