@@ -26,8 +26,6 @@ def deps do
 end
 ```
 
-If you don't want to use the release candiate, go to the [latest stable version documentation](https://github.com/jungsoft/uploadex/tree/v2.0.3).
-
 ## Usage
 
 Follow these steps to use Uploadex:
@@ -106,14 +104,6 @@ end
 ### 4: Configuration
 
 Depending on which features you are using, you may need extra configurations:
-
-#### Temporary Files
-
-If you are using `get_temporary_file` or `get_temporary_files`, you need to configure [task_after](https://github.com/OvermindDL1/task_after):
-
-```elixir
-config :task_after, global_name: TaskAfter
-```
 
 #### S3 Configuration
 

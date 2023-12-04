@@ -83,7 +83,7 @@ defmodule Uploadex.S3Storage do
   def get_temporary_file(filename, path, opts) when is_binary(filename) do
     bucket = Keyword.fetch!(opts, :bucket)
     directory = Keyword.fetch!(opts, :directory)
-    delay = Keyword.get(opts, :delete_after, 30_000)
+    delay = Keyword.get(opts, :delete_after, :timer.seconds(30))
     s3_path = Path.join(directory, filename)
 
     destination_file = Ecto.UUID.generate() <> Path.extname(filename)
@@ -91,11 +91,12 @@ defmodule Uploadex.S3Storage do
 
     bucket |> S3.download_file(s3_path, destination_path) |> ExAws.request!()
     delete_file_after_delay(delay, destination_path)
+
+    destination_path
   end
 
-  def delete_file_after_delay(delay, path) do
-    TaskAfter.task_after(delay, fn -> File.rm(path) end)
-    path
+  defp delete_file_after_delay(delay, path) do
+    :timer.apply_after(delay, File, :rm, [path])
   end
 
   defp convert_s3_result({:ok, _}), do: :ok
