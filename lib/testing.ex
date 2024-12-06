@@ -20,7 +20,7 @@ defmodule Uploadex.Testing do
   assert_stored_files(["file1.pdf", "file2.pdf"])
 
   # Asserting the filenames of the stored files ignoring the order
-  assert_stored_files(["file2.pdf", "file1.pdf"], ignore_order: true)
+  assert_stored_files(["file2.pdf", "file1.pdf"], ignoring_order: true)
 
   # Asserting that no file was stored
   refute_stored_files()
@@ -35,7 +35,7 @@ defmodule Uploadex.Testing do
   assert_deleted(["file3.pdf", "file4.pdf", "file5.pdf"])
 
   # Asserting the filenames of the deleted files ignoring the order
-  assert_deleted_files(["file4.pdf", "file5.pdf", "file3.pdf"], ignore_order: true)
+  assert_deleted_files(["file4.pdf", "file5.pdf", "file3.pdf"], ignoring_order: true)
 
   # Asserting that no file was deleted
   refute_deleted_files()
@@ -144,7 +144,7 @@ defmodule Uploadex.Testing do
   """
   @spec assert_stored_files(expected_files :: list(), opts :: [ignoring_order: boolean()]) :: true
   def assert_stored_files(expected_files, opts \\ []) do
-    ignore_order? = opts[:ignoring_order] || false
+    ignoring_order? = opts[:ignoring_order] || false
     stored_files = TestStorage.get_stored()
 
     error_message = """
@@ -157,7 +157,7 @@ defmodule Uploadex.Testing do
     #{inspect(stored_files)}
     """
 
-    if ignore_order? do
+    if ignoring_order? do
       assert Enum.sort(expected_files) == Enum.sort(stored_files), error_message
     else
       assert expected_files == stored_files, error_message
@@ -176,7 +176,7 @@ defmodule Uploadex.Testing do
   @spec assert_deleted_files(expected_files :: list(), opts :: [ignoring_order: boolean()]) ::
           true
   def assert_deleted_files(expected_files, opts \\ []) do
-    ignore_order? = opts[:ignoring_order] || false
+    ignoring_order? = opts[:ignoring_order] || false
     deleted_files = TestStorage.get_deleted()
 
     error_message = """
@@ -189,7 +189,7 @@ defmodule Uploadex.Testing do
     #{inspect(deleted_files)}
     """
 
-    if ignore_order? do
+    if ignoring_order? do
       assert Enum.sort(expected_files) == Enum.sort(deleted_files), error_message
     else
       assert expected_files == deleted_files, error_message
